@@ -199,10 +199,11 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
         )}
         {feed && !error && (
           <>
-            <div className="xl:w-64" />
+{/*             <div className="xl:w-64" /> */}
             <main className="wauto">
               <article
                 className="rounded-2xl bg-w m-2 px-6 py-4"
+                style="width: 100%;"
                 aria-label={feed.title ?? "Unnamed"}
               >
                 <div className="flex justify-between">
@@ -299,13 +300,13 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
               {feed && <Comments id={`${feed.id}`} />}
               <div className="h-16" />
             </main>
-            <div className="w-80 hidden lg:block relative">
+{/*             <div className="w-80 hidden lg:block relative">
               <div
                 className={`ml-2 start-0 end-0 top-[5.5rem] sticky`}
               >
                 <TOC />
               </div>
-            </div>
+            </div> */}
           </>
         )}
       </div>
