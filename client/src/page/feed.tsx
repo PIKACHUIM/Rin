@@ -299,13 +299,13 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
               {feed && <Comments id={`${feed.id}`} />}
               <div className="h-16" />
             </main>
-{/*             <div className="w-80 hidden lg:block relative">
+            <div className="w-80 hidden lg:block relative">
               <div
                 className={`ml-2 start-0 end-0 top-[5.5rem] sticky`}
               >
                 <TOC />
               </div>
-            </div> */}
+            </div>
           </>
         )}
       </div>
