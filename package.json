@@ -19,6 +19,8 @@
     "m": "bun scripts/dev-migrator.ts",
     "i18n": "bun --filter './client' i18n",
     "clean": "rm -rf dist node_modules client/node_modules server/node_modules",
+    "clean:build": "rm -rf dist client/dist server/dist && bun turbo clean",
+    "build:fresh": "bun run clean:build && bun install && bun run b",
     "format:check": "turbo format:check",
     "format:write": "turbo format:write"
   },

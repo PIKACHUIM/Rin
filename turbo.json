@@ -2,8 +2,13 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "cache": false
     },
     "dev": {
       "cache": false,
@@ -11,11 +16,15 @@
     },
     "t": {
       "cache": false,
-      "dependsOn": ["^g"]
+      "dependsOn": [
+        "^g"
+      ]
     },
     "g": {
-        "cache": false,
-        "dependsOn": ["^db:gen"]
+      "cache": false,
+      "dependsOn": [
+        "^db:gen"
+      ]
     },
     "db:gen": {
       "cache": false
@@ -24,16 +33,22 @@
       "cache": false
     },
     "format:check": {
-      "dependsOn": ["^format:check"]
+      "dependsOn": [
+        "^format:check"
+      ]
     },
     "format:write": {
-      "dependsOn": ["^format:write"]
+      "dependsOn": [
+        "^format:write"
+      ]
     },
     "cf:deploy": {
       "cache": false
     },
     "check": {
-      "dependsOn": ["^check"]
+      "dependsOn": [
+        "^check"
+      ]
     }
   }
 }
