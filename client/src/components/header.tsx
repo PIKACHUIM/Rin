@@ -18,11 +18,12 @@ import { TagList } from "./TagList";
 export function Header({ children }: { children?: React.ReactNode }) {
     const profile = useContext(ProfileContext);
     const { t } = useTranslation()
+    const [location] = useLocation()
 
     return useMemo(() => (
         <>
             {/* 顶部背景图片 */}
-            {process.env.BACKGROUND_URL && (
+            {process.env.BACKGROUND_URL && !location.startsWith("/writing") && (
                 <div className="fixed top-0 left-0 w-full h-96 z-0 overflow-hidden">
                     <div 
                         className="w-full h-full bg-cover bg-center bg-no-repeat"
@@ -104,7 +105,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
             </div>
             <div className="h-20"></div>
         </>
-    ), [profile, children])
+    ), [profile, children, location])
 }
 
 function NavItem({ menu, title, selected, href, when = true, onClick }: {
