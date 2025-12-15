@@ -33,3 +33,12 @@ dist-ssr
 *.sln
 *.sw?
 /.dev.vars
+fuwari-main
+hexo-theme-aurora-main
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+!.edgeone/project.json
+.tef_dist/*
+  

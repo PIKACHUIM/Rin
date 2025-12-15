@@ -17,7 +17,18 @@ export function TimelinePage() {
             headers: headersWithAuth()
         }).then(({ data }) => {
             if (data && typeof data !== 'string') {
-                const groups = Object.groupBy(data, ({ createdAt }) => new Date(createdAt).getFullYear())
+                const groups: Partial<Record<number, { id: number; title: string | null; createdAt: Date; }[]>> = {}
+                data.forEach((item: any) => {
+                    const year = new Date(item.createdAt).getFullYear()
+                    if (!groups[year]) {
+                        groups[year] = []
+                    }
+                    groups[year]!.push({
+                        id: item.id,
+                        title: item.title,
+                        createdAt: new Date(item.createdAt)
+                    })
+                })
                 setFeeds(groups)
             }
         })

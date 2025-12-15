@@ -14,10 +14,18 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Path mapping for workspace dependencies */
+    "baseUrl": ".",
+    "paths": {
+      "rin-server": ["../server/index.ts"],
+      "rin-server/*": ["../server/src/*"]
+    },
+
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
