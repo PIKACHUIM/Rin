@@ -8,7 +8,16 @@
       "outputs": [
         "dist/**"
       ],
-      "cache": false
+      "cache": false,
+      "inputs": ["src/**", "package.json", "tsconfig.json", "vite.config.ts"],
+      "passThroughEnv": [
+        "NODE_ENV",
+        "VITE_*",
+        "CI",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_URL"
+      ]
     },
     "dev": {
       "cache": false,
