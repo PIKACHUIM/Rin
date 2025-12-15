@@ -3,7 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import Elysia from "elysia";
 import { Feed } from "feed";
-import path from 'path';
+import path from 'node:path';
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
