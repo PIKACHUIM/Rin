@@ -2,22 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**"
-      ],
-      "cache": false,
-      "inputs": ["src/**", "package.json", "tsconfig.json", "vite.config.ts"],
-      "passThroughEnv": [
-        "NODE_ENV",
-        "VITE_*",
-        "CI",
-        "VERCEL",
-        "VERCEL_ENV",
-        "VERCEL_URL"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
     },
     "dev": {
       "cache": false,
@@ -25,15 +11,11 @@
     },
     "t": {
       "cache": false,
-      "dependsOn": [
-        "^g"
-      ]
+      "dependsOn": ["^g"]
     },
     "g": {
       "cache": false,
-      "dependsOn": [
-        "^db:gen"
-      ]
+      "dependsOn": ["^db:gen"]
     },
     "db:gen": {
       "cache": false
@@ -42,22 +24,16 @@
       "cache": false
     },
     "format:check": {
-      "dependsOn": [
-        "^format:check"
-      ]
+      "dependsOn": ["^format:check"]
     },
     "format:write": {
-      "dependsOn": [
-        "^format:write"
-      ]
+      "dependsOn": ["^format:write"]
     },
     "cf:deploy": {
       "cache": false
     },
     "check": {
-      "dependsOn": [
-        "^check"
-      ]
+      "dependsOn": ["^check"]
     }
   }
 }
