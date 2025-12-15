@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import ReactModal from "react-modal";
 import Popup from "reactjs-popup";
@@ -185,8 +185,16 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
       <div className="w-full flex flex-row justify-center ani-show">
         {error && (
           <>
-            <div className="flex flex-col wauto rounded-2xl bg-w m-2 p-6 items-center justify-center space-y-2">
-              <h1 className="text-xl font-bold t-primary">{error}</h1>
+            <div className="flex flex-col wauto rounded-2xl m-2 p-8 items-center justify-center space-y-4 shadow-aurora"
+                style={{
+                  backgroundColor: 'var(--background-secondary)',
+                  border: '1px solid var(--background-trans)'
+                }}>
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-2"
+                  style={{ background: 'var(--main-gradient)' }}>
+                <i className="ri-error-warning-line text-4xl text-white"></i>
+              </div>
+              <h1 className="text-2xl font-bold" style={{ color: 'var(--text-bright)' }}>{error}</h1>
               {error === "Not found" && id === "about" && (
                 <Tips value={t("about.notfound")} />
               )}
@@ -199,99 +207,131 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
         )}
         {feed && !error && (
           <>
-{/*             <div className="xl:w-64" /> */}
-            <main className="wauto" style={{ width: '150%' }} >
+            <main className="wauto" style={{ maxWidth: '900px', marginTop: '10rem' }} >
               <article
-                className="rounded-2xl bg-w m-2 px-6 py-4"
+                className="rounded-2xl m-2 p-4 lg:p-14 shadow-aurora"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
+                  border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
+                  backdropFilter: 'blur(10px)'
+                }}
                 aria-label={feed.title ?? "Unnamed"}
               >
-                <div className="flex justify-between">
-                  <div>
-                    <div className="mt-1 mb-1 flex gap-1">
-                      <p
-                        className="text-gray-400 text-[12px]"
-                        title={new Date(feed.createdAt).toLocaleString()}
-                      >
+                <div className="flex justify-between mb-8">
+                  <div className="flex-1">
+                    <h1 className="text-3xl lg:text-4xl font-extrabold mb-6 break-all relative pb-4" 
+                        style={{ color: 'var(--text-bright)' }}>
+                      {feed.title}
+                      <span className="absolute bottom-0 left-0 h-1 w-24 rounded-full" 
+                          style={{ background: 'var(--main-gradient)' }}></span>
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" style={{ color: 'var(--text-dim)' }}>
+                      <span className="flex items-center" title={new Date(feed.createdAt).toLocaleString()}>
+                        <i className="ri-calendar-line mr-1"></i>
                         {t("feed_card.published$time", {
                           time: timeago(feed.createdAt),
                         })}
-                      </p>
+                      </span>
 
                       {feed.createdAt !== feed.updatedAt && (
-                        <p
-                          className="text-gray-400 text-[12px]"
-                          title={new Date(feed.updatedAt).toLocaleString()}
-                        >
+                        <span className="flex items-center" title={new Date(feed.updatedAt).toLocaleString()}>
+                          <i className="ri-edit-line mr-1"></i>
                           {t("feed_card.updated$time", {
                             time: timeago(feed.updatedAt),
                           })}
-                        </p>
+                        </span>
+                      )}
+                      
+                      {counterEnabled && (
+                        <>
+                          <span className="flex items-center">
+                            <i className="ri-eye-line mr-1"></i>
+                            {feed.pv} {t("count.pv")}
+                          </span>
+                          <span className="flex items-center">
+                            <i className="ri-user-line mr-1"></i>
+                            {feed.uv} {t("count.uv")}
+                          </span>
+                        </>
                       )}
                     </div>
-                    {counterEnabled && <p className='text-[12px] text-gray-400 font-normal link-line'>
-                      <span> {t("count.pv")} </span>
-                      <span>
-                        {feed.pv}
-                      </span>
-                      <span> |</span>
-                      <span> {t("count.uv")} </span>
-                      <span>
-                        {feed.uv}
-                      </span>
-                    </p>}
-                    <div className="flex flex-row items-center">
-                      <h1 className="text-2xl font-bold t-primary break-all">
-                        {feed.title}
-                      </h1>
-                      <div className="flex-1 w-0" />
-                    </div>
                   </div>
-                  <div className="pt-2">
+                  <div className="pt-2 ml-4">
                     {profile?.permission && (
                       <div className="flex gap-2">
                         <button
                           aria-label={top > 0 ? t("untop.title") : t("top.title")}
                           onClick={topFeed}
-                          className={`flex-1 flex flex-col items-end justify-center px-2 py rounded-full transition ${top > 0 ? "bg-theme text-white hover:bg-theme-hover active:bg-theme-active" : "bg-secondary bg-button dark:text-neutral-400"}`}
+                          className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 hover:scale-110"
+                          style={top > 0 ? {
+                            background: 'var(--main-gradient)',
+                            color: 'white',
+                            boxShadow: 'var(--accent-shadow)'
+                          } : {
+                            backgroundColor: 'var(--background-secondary)',
+                            color: 'var(--text-dim)',
+                            border: '1px solid var(--background-trans)'
+                          }}
                         >
                           <i className="ri-skip-up-line" />
                         </button>
                         <Link
                           aria-label={t("edit")}
                           href={`/writing/${feed.id}`}
-                          className="flex-1 flex flex-col items-end justify-center px-2 py bg-secondary bg-button rounded-full transition"
+                          className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 hover:scale-110"
+                          style={{
+                            backgroundColor: 'var(--background-secondary)',
+                            color: 'var(--text-dim)',
+                            border: '1px solid var(--background-trans)'
+                          }}
                         >
-                          <i className="ri-edit-2-line dark:text-neutral-400" />
+                          <i className="ri-edit-2-line" />
                         </Link>
                         <button
                           aria-label={t("delete.title")}
                           onClick={deleteFeed}
-                          className="flex-1 flex flex-col items-end justify-center px-2 py bg-secondary bg-button rounded-full transition"
+                          className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 hover:scale-110"
+                          style={{
+                            backgroundColor: 'var(--background-secondary)',
+                            color: '#ef4444',
+                            border: '1px solid var(--background-trans)'
+                          }}
                         >
-                          <i className="ri-delete-bin-7-line text-red-500" />
+                          <i className="ri-delete-bin-7-line" />
                         </button>
                       </div>
                     )}
                   </div>
                 </div>
-                <Markdown content={feed.content} />
-                <div className="mt-6 flex flex-col gap-2">
+                <div className="mt-8 mb-8">
+                  <Markdown content={feed.content} />
+                </div>
+                <div className="mt-8 pt-6 flex flex-col gap-4" style={{ borderTop: '1px solid var(--background-trans)' }}>
                   {feed.hashtags.length > 0 && (
-                    <div className="flex flex-row flex-wrap gap-x-2">
+                    <div className="flex flex-row flex-wrap gap-2 mb-4">
                       {feed.hashtags.map(({ name }, index) => (
                         <HashTag key={index} name={name} />
                       ))}
                     </div>
                   )}
-                  <div className="flex flex-row items-center">
+                  <div className="flex flex-row items-center p-4 rounded-xl" 
+                      style={{ 
+                        backgroundColor: 'var(--bg-accent-05)',
+                        border: '1px solid var(--background-trans)'
+                      }}>
                     <img
                       src={feed.user.avatar || "/avatar.png"}
-                      className="w-8 h-8 rounded-full"
+                      className="w-12 h-12 rounded-full border-2"
+                      style={{ borderColor: 'var(--text-accent)' }}
                     />
-                    <div className="ml-2">
-                      <span className="text-gray-400 text-sm cursor-default">
+                    <div className="ml-3">
+                      <p className="font-semibold" style={{ color: 'var(--text-bright)' }}>
                         {feed.user.username}
-                      </span>
+                      </p>
+                      <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
+                        <i className="ri-quill-pen-line mr-1"></i>
+                        {t("article.author")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -404,35 +444,73 @@ function CommentInput({
       });
   }
   return (
-    <div className="w-full rounded-2xl bg-w t-primary m-2 p-6 items-end flex flex-col">
+    <div className="w-full rounded-2xl m-2 p-6 items-end flex flex-col shadow-aurora"
+        style={{
+          backgroundColor: 'var(--background-secondary)',
+          border: '1px solid var(--background-trans)'
+        }}>
       <div className="flex flex-col w-full items-start mb-4">
-        <label htmlFor="comment">{t("comment.title")}</label>
+        <h3 className="text-xl font-bold flex items-center" style={{ color: 'var(--text-bright)' }}>
+          <i className="ri-chat-3-line mr-2"></i>
+          {t("comment.title")}
+        </h3>
       </div>
       {profile ? (<>
         <textarea
           id="comment"
           placeholder={t("comment.placeholder.title")}
-          className="bg-w w-full h-24 rounded-lg"
+          className="w-full h-32 rounded-xl p-4 transition-all duration-300"
+          style={{
+            backgroundColor: 'var(--background-primary)',
+            color: 'var(--text-normal)',
+            border: '1px solid var(--background-trans)',
+            outline: 'none'
+          }}
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = 'var(--text-accent)';
+            e.currentTarget.style.boxShadow = '0 0 0 3px var(--bg-accent-05)';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = 'var(--background-trans)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
         />
         <button
-          className="mt-4 bg-theme text-white px-4 py-2 rounded-full"
+          className="mt-4 px-6 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95"
+          style={{
+            background: 'var(--main-gradient)',
+            color: 'white',
+            boxShadow: 'var(--accent-shadow)'
+          }}
           onClick={submit}
         >
+          <i className="ri-send-plane-fill mr-2"></i>
           {t("comment.submit")}
         </button>
       </>) : (
         <div className="flex flex-row w-full items-center justify-center space-x-2 py-12">
           <button
-            className="mt-2 bg-theme text-white px-4 py-2 rounded-full"
+            className="px-6 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95"
+            style={{
+              background: 'var(--main-gradient)',
+              color: 'white',
+              boxShadow: 'var(--accent-shadow)'
+            }}
             onClick={() => setIsOpened(true)}
           >
+            <i className="ri-login-box-line mr-2"></i>
             {t("login.required")}
           </button>
         </div>
       )}
-      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+      {error && (
+        <div className="mt-3 px-4 py-2 rounded-lg" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
+          <i className="ri-error-warning-line mr-1"></i>
+          {error}
+        </div>
+      )}
       <AlertUI />
       <LoginModal />
     </div>
@@ -485,12 +563,26 @@ function Comments({ id }: { id: string }) {
           <CommentInput id={id} onRefresh={loadComments} />
           {error && (
             <>
-              <div className="flex flex-col wauto rounded-2xl bg-w t-primary m-2 p-6 items-center justify-center">
-                <h1 className="text-xl font-bold t-primary">{error}</h1>
+              <div className="flex flex-col wauto rounded-2xl m-2 p-8 items-center justify-center space-y-4 shadow-aurora"
+                  style={{
+                    backgroundColor: 'var(--background-secondary)',
+                    border: '1px solid var(--background-trans)'
+                  }}>
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" 
+                    style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+                  <i className="ri-error-warning-line text-3xl" style={{ color: '#ef4444' }}></i>
+                </div>
+                <h1 className="text-xl font-bold" style={{ color: 'var(--text-bright)' }}>{error}</h1>
                 <button
-                  className="mt-2 bg-theme text-white px-4 py-2 rounded-full"
+                  className="px-6 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95"
+                  style={{
+                    background: 'var(--main-gradient)',
+                    color: 'white',
+                    boxShadow: 'var(--accent-shadow)'
+                  }}
                   onClick={loadComments}
                 >
+                  <i className="ri-refresh-line mr-2"></i>
                   {t("reload")}
                 </button>
               </div>
@@ -546,43 +638,63 @@ function CommentItem({
       })
   }
   return (
-    <div className="flex flex-row items-start rounded-xl mt-2">
+    <div className="flex flex-row items-start rounded-xl mt-3 p-4 transition-all duration-300 hover:shadow-aurora"
+        style={{
+          backgroundColor: 'var(--background-secondary)',
+          border: '1px solid var(--background-trans)'
+        }}>
       <img
         src={comment.user.avatar || ""}
-        className="w-8 h-8 rounded-full mt-4"
+        className="w-10 h-10 rounded-full border-2"
+        style={{ borderColor: 'var(--text-accent)' }}
       />
-      <div className="flex flex-col flex-1 w-0 ml-2 bg-w rounded-xl p-4">
-        <div className="flex flex-row">
-          <span className="t-primary text-base font-bold">
+      <div className="flex flex-col flex-1 w-0 ml-3">
+        <div className="flex flex-row items-center mb-2">
+          <span className="text-base font-bold" style={{ color: 'var(--text-bright)' }}>
             {comment.user.username}
           </span>
           <div className="flex-1 w-0" />
           <span
             title={new Date(comment.createdAt).toLocaleString()}
-            className="text-gray-400 text-sm"
+            className="text-sm flex items-center"
+            style={{ color: 'var(--text-dim)' }}
           >
+            <i className="ri-time-line mr-1"></i>
             {timeago(comment.createdAt)}
           </span>
         </div>
-        <p className="t-primary break-words">{comment.content}</p>
+        <p className="break-words mb-2" style={{ color: 'var(--text-normal)' }}>{comment.content}</p>
         <div className="flex flex-row justify-end">
           {(profile?.permission || profile?.id == comment.user.id) && (
             <Popup
               arrow={false}
               trigger={
-                <button className="px-2 py bg-secondary rounded-full">
-                  <i className="ri-more-fill t-secondary"></i>
+                <button className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    style={{
+                      backgroundColor: 'var(--background-primary)',
+                      color: 'var(--text-dim)',
+                      border: '1px solid var(--background-trans)'
+                    }}>
+                  <i className="ri-more-fill"></i>
                 </button>
               }
               position="left center"
             >
-              <div className="flex flex-row self-end mr-2">
+              <div className="flex flex-row self-end mr-2 rounded-xl p-2 shadow-aurora"
+                  style={{
+                    backgroundColor: 'var(--background-secondary)',
+                    border: '1px solid var(--background-trans)'
+                  }}>
                 <button
                   onClick={deleteComment}
                   aria-label={t("delete.comment.title")}
-                  className="px-2 py bg-secondary rounded-full"
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  style={{
+                    backgroundColor: 'var(--background-primary)',
+                    color: '#ef4444'
+                  }}
                 >
-                  <i className="ri-delete-bin-2-line t-secondary"></i>
+                  <i className="ri-delete-bin-2-line"></i>
                 </button>
               </div>
             </Popup>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { getCookie } from 'typescript-cookie'
 import { DefaultParams, PathPattern, Route, Switch } from 'wouter'
 import Footer from './components/footer'
@@ -63,9 +63,8 @@ function App() {
   }, [])
   const favicon = useMemo(() => config.get<string>("favicon"), [config])
   return (
-    <>
-      <ClientConfigContext.Provider value={config}>
-        <ProfileContext.Provider value={profile}>
+    <ClientConfigContext.Provider value={config}>
+      <ProfileContext.Provider value={profile}>
           <Helmet>
             {favicon &&
               <link rel="icon" href={favicon} />}
@@ -164,8 +163,7 @@ function App() {
             <Route>404: No such page!</Route>
           </Switch>
         </ProfileContext.Provider>
-      </ClientConfigContext.Provider>
-    </>
+    </ClientConfigContext.Provider>
   )
 }
 
