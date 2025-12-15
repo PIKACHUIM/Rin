@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Link } from "wouter"
 import { Waiting } from "../components/loading"
 import { client } from "../main"
@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 
 export function TimelinePage() {
     const [feeds, setFeeds] = useState<Partial<Record<number, { id: number; title: string | null; createdAt: Date; }[]>>>()
-    const [length, setLength] = useState(0)
     const ref = useRef(false)
     const { t } = useTranslation()
     function fetchFeeds() {
@@ -18,7 +17,6 @@ export function TimelinePage() {
             headers: headersWithAuth()
         }).then(({ data }) => {
             if (data && typeof data !== 'string') {
-                setLength(data.length)
                 const groups = Object.groupBy(data, ({ createdAt }) => new Date(createdAt).getFullYear())
                 setFeeds(groups)
             }
@@ -40,19 +38,16 @@ export function TimelinePage() {
                 <meta property="og:url" content={document.URL} />
             </Helmet>
             <Waiting for={feeds}>
-                <main className="w-full flex flex-col justify-center items-center mb-8 ani-show">
-                    <div className="wauto text-start text-black dark:text-white py-4 text-4xl font-bold">
-                        <p>
-                            {t('timeline')}
-                        </p>
-                        <div className="flex flex-row justify-between">
-                            <p className="text-sm mt-4 text-neutral-500 font-normal">
-                                {t('article.total$count', { count: length })}
-                            </p>
-                        </div>
-                    </div>
+                <main className="w-full flex flex-col justify-center items-center mb-8 ani-show" style={{ marginTop: '10rem' }}>
+                    {/* 标题已隐藏 */}
+                    <div className="wauto rounded-2xl p-6" style={{
+                        background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
+                        boxShadow: 'var(--card-shadow)',
+                        border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
+                        backdropFilter: 'blur(10px)'
+                    }}>
                     {feeds && Object.keys(feeds).sort((a, b) => parseInt(b) - parseInt(a)).map(year => (
-                        <div key={year} className="wauto flex flex-col justify-center items-start">
+                        <div key={year} className="w-full flex flex-col justify-center items-start">
                             <h1 className="flex flex-row items-center space-x-2">
                                 <span className="text-2xl font-bold t-primary ">
                                     {t('year$year', { year: year })}
@@ -68,6 +63,7 @@ export function TimelinePage() {
                             </div>
                         </div>
                     ))}
+                    </div>
                 </main>
             </Waiting>
         </>

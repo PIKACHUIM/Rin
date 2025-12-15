@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { useTranslation } from "react-i18next"
 import { Link, useSearch } from "wouter"
 import { FeedCard } from "../components/feed_card"
@@ -57,7 +57,7 @@ export function SearchPage({ keyword }: { keyword: string }) {
                 <meta property="og:url" content={document.URL} />
             </Helmet>
             <Waiting for={status === 'idle'}>
-                <main className="w-full flex flex-col justify-center items-center mb-8">
+                <main className="w-full flex flex-col justify-center items-center mb-8" style={{ marginTop: '10rem' }}>
                     <div className="wauto text-start text-black dark:text-white py-4 text-4xl font-bold">
                         <p>
                             {t('article.search.title')}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { HashTag } from "../components/hashtag";
@@ -39,14 +39,16 @@ export function HashtagsPage() {
                 <meta property="og:url" content={document.URL} />
             </Helmet>
             <Waiting for={hashtags}>
-                <main className="w-full flex flex-col justify-center items-center mb-8 ani-show">
-                    <div className="wauto text-start text-black dark:text-white py-4 text-4xl font-bold">
-                        <p>
-                            {t('hashtags')}
-                        </p>
-                    </div>
+                <main className="w-full flex flex-col justify-center items-center mb-8 ani-show" style={{ marginTop: '10rem' }}>
+                    {/* 标题已隐藏 */}
 
-                    <div className="wauto flex flex-col flex-wrap items-start justify-start">
+                    <div className="wauto rounded-2xl p-6" style={{
+                        background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
+                        boxShadow: 'var(--card-shadow)',
+                        border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
+                        backdropFilter: 'blur(10px)'
+                    }}>
+                    <div className="w-full flex flex-col flex-wrap items-start justify-start">
                         {hashtags?.filter(({ feeds }) => feeds > 0).map((hashtag, index) => {
                             return (
                                 <div key={index} className="w-full flex flex-row">
@@ -62,6 +64,7 @@ export function HashtagsPage() {
                                 </div>
                             )
                         })}
+                    </div>
                     </div>
                 </main>
             </Waiting>

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import Popup from 'reactjs-popup';
 import { ClientConfigContext } from '../state/config';
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { siteName } from '../utils/constants';
 import { useTranslation } from "react-i18next";
 import { useLoginModal } from '../hooks/useLoginModal';
@@ -46,9 +46,9 @@ function Footer() {
                 <link rel="alternate" type="application/atom+xml" title={siteName} href="/sub/atom.xml" />
                 <link rel="alternate" type="application/json" title={siteName} href="/sub/rss.json" />
             </Helmet>
-            <div className="flex flex-col mb-8 space-y-2 justify-center items-center t-primary ani-show">
+            <div className="flex flex-col mb-8 space-y-3 justify-center items-center ani-show" style={{ color: 'var(--text-normal)' }}>
                 {footerHtml && <div dangerouslySetInnerHTML={{ __html: footerHtml }} />}
-                <p className='text-sm text-neutral-500 font-normal link-line'>
+                <p className='text-sm font-normal link-line' style={{ color: 'var(--text-dim)' }}>
                     <span onDoubleClick={() => {
                         if(doubleClickTimes >= 2){ // actually need 3 times doubleClick
                             setDoubleClickTimes(0)
@@ -64,34 +64,45 @@ function Footer() {
                     {config.get<boolean>('rss') && <>
                         <Spliter />
                         <Popup trigger={
-                            <button className="hover:underline" type="button">
+                            <button className="hover:underline transition-colors duration-300" type="button"
+                                style={{ color: 'var(--text-dim)' }}>
                                 RSS
                             </button>
                         }
                             position="top center"
                             arrow={false}
                             closeOnDocumentClick>
-                            <div className="border-card">
-                                <p className='font-bold t-primary'>
+                            <div className="rounded-xl p-4 shadow-aurora"
+                                style={{
+                                    backgroundColor: 'var(--background-secondary)',
+                                    border: '1px solid var(--background-trans)'
+                                }}>
+                                <p className='font-bold mb-2' style={{ color: 'var(--text-bright)' }}>
                                     {t('footer.rss')}
                                 </p>
-                                <p>
-                                    <a href='/sub/rss.xml'>
+                                <p className='space-x-2' style={{ color: 'var(--text-normal)' }}>
+                                    <a href='/sub/rss.xml' className='hover:underline transition-colors duration-300'
+                                        style={{ color: 'var(--text-accent)' }}>
                                         RSS
                                     </a> <Spliter />
-                                    <a href='/sub/atom.xml'>
+                                    <a href='/sub/atom.xml' className='hover:underline transition-colors duration-300'
+                                        style={{ color: 'var(--text-accent)' }}>
                                         Atom
                                     </a> <Spliter />
-                                    <a href='/sub/rss.json'>
+                                    <a href='/sub/rss.json' className='hover:underline transition-colors duration-300'
+                                        style={{ color: 'var(--text-accent)' }}>
                                         JSON
                                     </a>
                                 </p>
-
                             </div>
                         </Popup>
                     </>}
                 </p>
-                <div className="w-fit-content inline-flex rounded-full border border-zinc-200 p-[3px] dark:border-zinc-700">
+                <div className="w-fit-content inline-flex rounded-full p-1 shadow-aurora"
+                    style={{
+                        backgroundColor: 'var(--background-secondary)',
+                        border: '1px solid var(--background-trans)'
+                    }}>
                     <ThemeButton mode='light' current={modeState} label="Toggle light mode" icon="ri-sun-line" onClick={setMode} />
                     <ThemeButton mode='system' current={modeState} label="Toggle system mode" icon="ri-computer-line" onClick={setMode} />
                     <ThemeButton mode='dark' current={modeState} label="Toggle dark mode" icon="ri-moon-line" onClick={setMode} />
@@ -110,9 +121,18 @@ function Spliter() {
 }
 
 function ThemeButton({ current, mode, label, icon, onClick }: { current: ThemeMode, label: string, mode: ThemeMode, icon: string, onClick: (mode: ThemeMode) => void }) {
+    const isActive = current === mode;
     return (<button aria-label={label} type="button" onClick={() => onClick(mode)}
-        className={`rounded-inherit inline-flex h-[32px] w-[32px] items-center justify-center border-0 t-primary ${current === mode ? "bg-w rounded-full shadow-xl shadow-light" : ""}`}>
-        <i className={`${icon}`} />
+        className="inline-flex h-[36px] w-[36px] items-center justify-center border-0 rounded-full transition-all duration-300 hover:scale-110"
+        style={isActive ? {
+            background: 'var(--main-gradient)',
+            color: 'white',
+            boxShadow: 'var(--accent-shadow)'
+        } : {
+            backgroundColor: 'transparent',
+            color: 'var(--text-dim)'
+        }}>
+        <i className={`${icon} text-lg`} />
     </button>)
 }
 

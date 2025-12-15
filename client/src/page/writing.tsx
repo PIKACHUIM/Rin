@@ -6,7 +6,7 @@ import {Calendar} from 'primereact/calendar';
 import 'primereact/resources/primereact.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import Loading from 'react-loading';
 import {ShowAlertType, useAlert} from '../components/dialog';

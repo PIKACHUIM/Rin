@@ -1,44 +1,105 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
+    /* Aurora风格背景色 */
     .bg-w {
-      @apply bg-white dark:bg-dark;
+      background-color: var(--background-secondary);
+    }
+  
+    .bg-primary {
+      background-color: var(--background-primary);
     }
   
     .bg-secondary {
-      @apply bg-neutral-100 dark:bg-neutral-700;
+      background-color: var(--background-secondary);
     }
   
+    /* Aurora风格按钮 */
     .bg-button {
-      @apply hover:bg-neutral-200 dark:hover:bg-neutral-600 active:bg-neutral-300 dark:active:bg-neutral-500;
+      background-color: var(--background-secondary);
+      transition: var(--theme-transition);
+    }
+    
+    .bg-button:hover {
+      background-color: var(--background-trans);
+      transform: translateY(-1px);
+    }
+    
+    .bg-button:active {
+      transform: translateY(0);
     }
 
     .bg-hover {
-      @apply hover:bg-neutral-200 dark:hover:bg-neutral-600;
+      transition: var(--theme-transition);
+    }
+    
+    .bg-hover:hover {
+      background-color: var(--background-trans);
     }
   
+    /* Aurora风格阴影 */
     .shadow-light {
-      @apply shadow-neutral-200/30 dark:shadow-black/10;
+      box-shadow: var(--card-shadow);
     }
   
     .shadow-deep {
-      @apply shadow-neutral-200/70 dark:shadow-black/30;
+      box-shadow: var(--card-shadow-hover);
+    }
+    
+    .shadow-aurora {
+      box-shadow: var(--accent-shadow);
     }
   
+    /* Aurora风格文本 */
     .t-primary {
-      @apply text-black dark:text-white;
+      color: var(--text-bright);
     }
   
     .t-secondary {
-      @apply text-neutral-500 dark:text-neutral-200;
+      color: var(--text-normal);
+    }
+    
+    .t-dim {
+      color: var(--text-dim);
+    }
+    
+    .t-accent {
+      color: var(--text-accent);
+    }
+    
+    .t-sub-accent {
+      color: var(--text-sub-accent);
     }
   
+    /* 响应式宽度 */
     .wauto {
       @apply w-full md:w-11/12 lg:w-10/12 xl:w-8/12 2xl:w-6/12 duration-300;
     }
   
     .writeauto {
       @apply w-full md:w-7/12 lg:w-8/12 duration-300;
+    }
+    
+    /* Aurora风格卡片 */
+    .aurora-card {
+      background-color: var(--background-secondary);
+      box-shadow: var(--card-shadow);
+      border-radius: 1rem;
+      transition: var(--theme-transition);
+    }
+    
+    .aurora-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-2px);
+    }
+    
+    /* Aurora风格渐变 */
+    .aurora-gradient-text {
+      background: var(--strong-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
   }

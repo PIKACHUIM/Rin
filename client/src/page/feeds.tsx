@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Link, useSearch } from "wouter"
 import { FeedCard } from "../components/feed_card"
 import { Waiting } from "../components/loading"
@@ -8,7 +8,9 @@ import { ProfileContext } from "../state/profile"
 import { headersWithAuth } from "../utils/auth"
 import { siteName } from "../utils/constants"
 import { tryInt } from "../utils/int"
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next"
+import { Sidebar } from "../components/Sidebar"
+import { TagList } from "../components/TagList"
 
 type FeedsData = {
     size: number,
@@ -76,21 +78,43 @@ export function FeedsPage() {
                 <meta property="og:url" content={document.URL} />
             </Helmet>
             <Waiting for={feeds.draft.size + feeds.normal.size + feeds.unlisted.size > 0 || status === 'idle'}>
-                <main className="w-full flex flex-col justify-center items-center mb-8">
-                    <div className="wauto text-start text-black dark:text-white py-4 text-4xl font-bold">
-                        <p>
-                            {listState === 'draft' ? t('draft_bin') : listState === 'normal' ? t('article.title') : t('unlisted')}
-                        </p>
-                        <div className="flex flex-row justify-between">
-                            <p className="text-sm mt-4 text-neutral-500 font-normal">
-                                {t('article.total$count', { count: feeds[listState]?.size })}
-                            </p>
+                <div className="w-full flex justify-center mb-8" style={{ marginTop: '10rem' }}>
+                    {/* 左侧边栏 - 桌面端显示 */}
+                    <aside className="hidden xl:block flex-shrink-0 sticky top-24 h-fit mr-8" style={{ width: '10rem' }}>
+                        <div className="flex flex-col gap-4 rounded-2xl p-4" style={{
+                            background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
+                            boxShadow: 'var(--card-shadow)',
+                            border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
+                            backdropFilter: 'blur(10px)'
+                        }}>
+                            <Sidebar />
+                            <TagList />
+                        </div>
+                    </aside>
+                    
+                    {/* 主内容区域 */}
+                    <main className="flex-1 max-w-5xl">
+                    {/* 文章标题部分已删除 */}
+                    <div className="w-full text-start">
+                        <div className="flex flex-row justify-between items-center">
                             {profile?.permission &&
-                                <div className="flex flex-row space-x-4">
-                                    <Link href={listState === 'draft' ? '/?type=normal' : '/?type=draft'} className={`text-sm mt-4 text-neutral-500 font-normal ${listState === 'draft' ? "text-theme" : ""}`}>
+                                <div className="flex flex-row space-x-3">
+                                    <Link href={listState === 'draft' ? '/?type=normal' : '/?type=draft'} 
+                                        className="text-sm font-medium px-4 py-2 rounded-full transition-all duration-300"
+                                        style={{
+                                            backgroundColor: listState === 'draft' ? 'var(--bg-accent-55)' : 'var(--bg-accent-05)',
+                                            color: listState === 'draft' ? 'white' : 'var(--text-accent)'
+                                        }}>
+                                        <i className="ri-draft-line mr-1"></i>
                                         {t('draft_bin')}
                                     </Link>
-                                    <Link href={listState === 'unlisted' ? '/?type=normal' : '/?type=unlisted'} className={`text-sm mt-4 text-neutral-500 font-normal ${listState === 'unlisted' ? "text-theme" : ""}`}>
+                                    <Link href={listState === 'unlisted' ? '/?type=normal' : '/?type=unlisted'} 
+                                        className="text-sm font-medium px-4 py-2 rounded-full transition-all duration-300"
+                                        style={{
+                                            backgroundColor: listState === 'unlisted' ? 'var(--bg-accent-55)' : 'var(--bg-accent-05)',
+                                            color: listState === 'unlisted' ? 'white' : 'var(--text-accent)'
+                                        }}>
+                                        <i className="ri-eye-off-line mr-1"></i>
                                         {t('unlisted')}
                                     </Link>
                                 </div>
@@ -98,28 +122,44 @@ export function FeedsPage() {
                         </div>
                     </div>
                     <Waiting for={status === 'idle'}>
-                        <div className="wauto flex flex-col ani-show">
-                            {feeds[listState].data.map(({ id, ...feed }: any) => (
-                                <FeedCard key={id} id={id} {...feed} />
-                            ))}
+                        <div className="w-full ani-show">
+                            <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {feeds[listState].data.map(({ id, ...feed }: any) => (
+                                    <li key={id}>
+                                        <FeedCard id={id} {...feed} />
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                        <div className="wauto flex flex-row items-center mt-4 ani-show">
+                        <div className="w-full flex flex-row items-center justify-center mt-8 ani-show gap-4">
                             {page > 1 &&
                                 <Link href={`/?type=${listState}&page=${(page - 1)}`}
-                                    className={`text-sm font-normal rounded-full px-4 py-2 text-white bg-theme`}>
+                                    className="text-sm font-medium rounded-full px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2"
+                                    style={{
+                                        background: 'var(--main-gradient)',
+                                        color: 'white',
+                                        boxShadow: 'var(--accent-shadow)'
+                                    }}>
+                                    <i className="ri-arrow-left-line"></i>
                                     {t('previous')}
                                 </Link>
                             }
-                            <div className="flex-1" />
                             {feeds[listState]?.hasNext &&
                                 <Link href={`/?type=${listState}&page=${(page + 1)}`}
-                                    className={`text-sm font-normal rounded-full px-4 py-2 text-white bg-theme`}>
+                                    className="text-sm font-medium rounded-full px-6 py-3 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2"
+                                    style={{
+                                        background: 'var(--main-gradient)',
+                                        color: 'white',
+                                        boxShadow: 'var(--accent-shadow)'
+                                    }}>
                                     {t('next')}
+                                    <i className="ri-arrow-right-line"></i>
                                 </Link>
                             }
                         </div>
                     </Waiting>
-                </main>
+                    </main>
+                </div>
             </Waiting>
         </>
     )

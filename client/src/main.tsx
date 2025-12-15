@@ -2,11 +2,11 @@ import { treaty } from '@elysiajs/eden'
 import i18n from "i18next"
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Helmet } from 'react-helmet'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 import Backend from 'i18next-http-backend';
 import { initReactI18next } from "react-i18next"
 import Modal from 'react-modal'
-import { App as Server } from 'rin-server/src/server'
+import type { AppType } from 'rin-server'
 import App from './App'
 import './index.css'
 import './components.css'
@@ -15,7 +15,7 @@ import { listenSystemMode } from './utils/darkModeUtils'
 import LanguageDetector from 'i18next-browser-languagedetector';
 export const endpoint = process.env.API_URL || 'http://localhost:3001'
 export const oauth_url = process.env.API_URL + '/user/github'
-export const client = treaty<Server>(endpoint)
+export const client = treaty<AppType>(endpoint)
 listenSystemMode()
 i18n
   .use(Backend)
@@ -35,10 +35,12 @@ i18n
   });
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Helmet>
-      <title>{siteName}</title>
-    </Helmet>
-    <App />
+    <HelmetProvider>
+      <Helmet>
+        <title>{siteName}</title>
+      </Helmet>
+      <App />
+    </HelmetProvider>
   </React.StrictMode>
 )
 Modal.setAppElement('#root');

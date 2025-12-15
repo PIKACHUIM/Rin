@@ -11,6 +11,8 @@ import { IconSmall } from "./icon";
 import { Input } from "./input";
 import { Padding } from "./padding";
 import { ClientConfigContext } from "../state/config";
+import { Sidebar } from "./Sidebar";
+import { TagList } from "./TagList";
 
 
 export function Header({ children }: { children?: React.ReactNode }) {
@@ -19,18 +21,46 @@ export function Header({ children }: { children?: React.ReactNode }) {
 
     return useMemo(() => (
         <>
-            <div className="fixed z-40">
-                <div className="w-screen">
-                    <Padding className="mx-4 mt-4">
+            {/* 顶部背景图片 */}
+            {process.env.BACKGROUND_URL && (
+                <div className="fixed top-0 left-0 w-full h-96 z-0 overflow-hidden">
+                    <div 
+                        className="w-full h-full bg-cover bg-center bg-no-repeat"
+                        style={{ 
+                            backgroundImage: `url(${process.env.BACKGROUND_URL})`,
+                            filter: 'brightness(0.7)'
+                        }}
+                    />
+                    <div 
+                        className="absolute bottom-0 left-0 w-full h-48"
+                        style={{
+                            background: 'linear-gradient(to bottom, transparent, var(--background-primary))'
+                        }}
+                    />
+                </div>
+            )}
+            
+            <div className="fixed z-40 w-full">
+                <div className="w-screen backdrop-blur-md" style={{ 
+                    background: 'linear-gradient(135deg, rgba(var(--background-primary-rgb), 0.75), rgba(var(--background-secondary-rgb), 0.8))',
+                    borderBottom: '1px solid rgba(var(--background-trans-rgb), 0.3)'
+                }}>
+                    <Padding className="mx-4 py-3">
                         <div className="w-full flex justify-between items-center">
                             <Link aria-label={t('home')} href="/"
-                                className="hidden opacity-0 md:opacity-100 duration-300 mr-auto md:flex flex-row items-center">
-                                <img src={process.env.AVATAR} alt="Avatar" className="w-12 h-12 rounded-2xl border-2" />
+                                className="hidden opacity-0 md:opacity-100 duration-300 mr-auto md:flex flex-row items-center group">
+                                <div className="relative">
+                                    <img src={process.env.AVATAR} alt="Avatar" 
+                                        className="w-12 h-12 rounded-2xl border-2 transition-all duration-300 group-hover:scale-105" 
+                                        style={{ borderColor: 'var(--text-accent)' }} />
+                                    <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300" 
+                                        style={{ background: 'var(--main-gradient)' }}></div>
+                                </div>
                                 <div className="flex flex-col justify-center items-start mx-4">
-                                    <p className="text-xl font-bold dark:text-white">
+                                    <p className="text-xl font-bold transition-colors duration-300" style={{ color: 'var(--text-bright)' }}>
                                         {process.env.NAME}
                                     </p>
-                                    <p className="text-xs text-neutral-500">
+                                    <p className="text-xs transition-colors duration-300" style={{ color: 'var(--text-dim)' }}>
                                         {process.env.DESCRIPTION}
                                     </p>
                                 </div>
@@ -38,16 +68,22 @@ export function Header({ children }: { children?: React.ReactNode }) {
                             <div
                                 className="w-full md:w-max transition-all duration-500 md:absolute md:left-1/2 md:translate-x-[-50%] flex-row justify-center items-center">
                                 <div
-                                    className="flex flex-row items-center bg-w t-primary rounded-full px-2 shadow-xl shadow-light">
+                                    className="flex flex-row items-center rounded-full px-2 shadow-aurora"
+                                    style={{ 
+                                        background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
+                                        border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
+                                        backdropFilter: 'blur(10px)'
+                                    }}>
                                     <Link aria-label={t('home')} href="/"
-                                        className="visible opacity-100 md:hidden md:opacity-0 duration-300 mr-auto flex flex-row items-center py-2">
+                                        className="visible opacity-100 md:hidden md:opacity-0 duration-300 mr-auto flex flex-row items-center py-2 group">
                                         <img src={process.env.AVATAR} alt="Avatar"
-                                            className="w-10 h-10 rounded-full border-2" />
+                                            className="w-10 h-10 rounded-full border-2 transition-all duration-300 group-hover:scale-105"
+                                            style={{ borderColor: 'var(--text-accent)' }} />
                                         <div className="flex flex-col justify-center items-start mx-2">
-                                            <p className="text-sm font-bold">
+                                            <p className="text-sm font-bold" style={{ color: 'var(--text-bright)' }}>
                                                 {process.env.NAME}
                                             </p>
-                                            <p className="text-xs text-neutral-500">
+                                            <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
                                                 {process.env.DESCRIPTION}
                                             </p>
                                         </div>
@@ -57,7 +93,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
                                     <Menu />
                                 </div>
                             </div>
-                            <div className="ml-auto hidden opacity-0 md:opacity-100 duration-300 md:flex flex-row items-center space-x-2">
+                            <div className="ml-auto hidden opacity-0 md:opacity-100 duration-300 md:flex flex-row items-center space-x-3">
                                 <SearchButton />
                                 <LanguageSwitch />
                                 <UserAvatar profile={profile} />
@@ -83,11 +119,22 @@ function NavItem({ menu, title, selected, href, when = true, onClick }: {
         <>
             {when &&
                 <Link href={href}
-                    className={`${menu ? "" : "hidden"} md:block cursor-pointer hover:text-theme duration-300 px-2 py-4 md:p-4 text-sm ${selected ? "text-theme" : "dark:text-white"}`}
+                    className={`${menu ? "" : "hidden"} md:block cursor-pointer duration-300 px-2 py-4 md:p-4 text-sm font-medium relative group`}
+                    style={{ 
+                        color: selected ? 'var(--text-accent)' : 'var(--text-normal)'
+                    }}
                     state={{ animate: true }}
                     onClick={onClick}
                 >
                     {title}
+                    {selected && (
+                        <span className="absolute bottom-2 left-2 right-2 h-0.5 rounded-full" 
+                            style={{ background: 'var(--main-gradient)' }}></span>
+                    )}
+                    {!selected && (
+                        <span className="absolute bottom-2 left-2 right-2 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+                            style={{ background: 'var(--main-gradient)' }}></span>
+                    )}
                 </Link>}
         </>
     )
@@ -104,33 +151,48 @@ function Menu() {
 
     return (
         <div className="visible md:hidden flex flex-row items-center">
-            <Popup
-                arrow={false}
-                trigger={<div>
-                    <button onClick={() => setOpen(true)}
-                        className="w-10 h-10 rounded-full flex flex-row items-center justify-center">
-                        <i className="ri-menu-line ri-lg" />
-                    </button>
-                </div>
-                }
-                position="bottom right"
-                open={isOpen}
-                nested
-                onOpen={() => document.body.style.overflow = "hidden"}
-                onClose={onClose}
-                closeOnDocumentClick
-                closeOnEscape
-                overlayStyle={{ background: "rgba(0,0,0,0.3)" }}
-            >
-                <div className="flex flex-col bg-w rounded-xl p-2 mt-4 w-[50vw]">
-                    <div className="flex flex-row justify-end space-x-2">
-                        <SearchButton onClose={onClose} />
-                        <LanguageSwitch />
-                        <UserAvatar profile={profile} />
+            <button onClick={() => setOpen(true)}
+                className="w-10 h-10 rounded-full flex flex-row items-center justify-center">
+                <i className="ri-menu-line ri-lg" />
+            </button>
+            
+            {/* 全屏弹出层 */}
+            {isOpen && (
+                <div className="fixed inset-0 z-[100]">
+                    {/* 遮罩层 */}
+                    <div 
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={onClose}
+                    />
+                    
+                    {/* 内容区域 */}
+                    <div className="absolute inset-0 flex items-start justify-center pt-20 px-4 overflow-y-auto">
+                        <div className="flex flex-col lg:flex-row gap-4 w-full max-w-6xl mb-8 relative">
+                            {/* 左侧栏 */}
+                            <div className="w-full lg:w-80 flex-shrink-0">
+                                <div className="flex flex-col gap-4">
+                                    <Sidebar />
+                                    <TagList />
+                                </div>
+                            </div>
+                            
+                            {/* 右侧菜单 */}
+                            <div className="flex flex-col rounded-2xl p-4 shadow-aurora flex-1"
+                                style={{ 
+                                    backgroundColor: 'var(--background-secondary)',
+                                    border: '1px solid var(--background-trans)'
+                                }}>
+                                <div className="flex flex-row justify-end space-x-2 mb-4">
+                                    <SearchButton onClose={onClose} />
+                                    <LanguageSwitch />
+                                    <UserAvatar profile={profile} onClose={onClose} />
+                                </div>
+                                <NavBar menu={true} onClick={onClose} />
+                            </div>
+                        </div>
                     </div>
-                    <NavBar menu={true} onClick={onClose} />
                 </div>
-            </Popup>
+            )}
         </div>
     )
 }
@@ -169,7 +231,13 @@ function LanguageSwitch({ className }: { className?: string }) {
         <div className={className + " flex flex-row items-center"}>
             <Popup trigger={
                 <button title={label} aria-label={label}
-                    className="flex rounded-full border dark:border-neutral-600 px-2 bg-w aspect-[1] items-center justify-center t-primary bg-button">
+                    className="flex rounded-full px-3 py-2 aspect-square items-center justify-center transition-all duration-300 hover:scale-105"
+                    style={{
+                        backgroundColor: 'var(--background-secondary)',
+                        border: '1px solid var(--background-trans)',
+                        color: 'var(--text-normal)',
+                        boxShadow: 'var(--card-shadow)'
+                    }}>
                     <i className="ri-translate-2"></i>
                 </button>
             }
@@ -177,12 +245,22 @@ function LanguageSwitch({ className }: { className?: string }) {
                 arrow={false}
                 closeOnDocumentClick
             >
-                <div className="border-card">
-                    <p className='font-bold t-primary'>
+                <div className="rounded-xl p-3 shadow-aurora"
+                    style={{
+                        backgroundColor: 'var(--background-secondary)',
+                        border: '1px solid var(--background-trans)'
+                    }}>
+                    <p className='font-bold mb-2' style={{ color: 'var(--text-bright)' }}>
                         Languages
                     </p>
                     {languages.map(({ code, name }) => (
-                        <button key={code} onClick={() => i18n.changeLanguage(code)}>
+                        <button key={code} 
+                            onClick={() => i18n.changeLanguage(code)}
+                            className="block w-full text-left px-3 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+                            style={{
+                                color: 'var(--text-normal)',
+                                backgroundColor: i18n.language === code ? 'var(--bg-accent-05)' : 'transparent'
+                            }}>
                             {name}
                         </button>
                     ))}
@@ -195,7 +273,7 @@ function LanguageSwitch({ className }: { className?: string }) {
 function SearchButton({ className, onClose }: { className?: string, onClose?: () => void }) {
     const { t } = useTranslation()
     const [isOpened, setIsOpened] = useState(false);
-    const [_, setLocation] = useLocation()
+    const [, setLocation] = useLocation()
     const [value, setValue] = useState('')
     const label = t('article.search.title')
     const onSearch = () => {
@@ -210,7 +288,13 @@ function SearchButton({ className, onClose }: { className?: string, onClose?: ()
     }
     return (<div className={className + " flex flex-row items-center"}>
         <button onClick={() => setIsOpened(true)} title={label} aria-label={label}
-            className="flex rounded-full border dark:border-neutral-600 px-2 bg-w aspect-[1] items-center justify-center t-primary bg-button">
+            className="flex rounded-full px-3 py-2 aspect-square items-center justify-center transition-all duration-300 hover:scale-105"
+            style={{
+                backgroundColor: 'var(--background-secondary)',
+                border: '1px solid var(--background-trans)',
+                color: 'var(--text-normal)',
+                boxShadow: 'var(--card-shadow)'
+            }}>
             <i className="ri-search-line"></i>
         </button>
         <ReactModal
@@ -239,7 +323,11 @@ function SearchButton({ className, onClose }: { className?: string, onClose?: ()
             }}
             onRequestClose={() => setIsOpened(false)}
         >
-            <div className="bg-w w-full flex flex-row items-center justify-between p-4 space-x-4">
+            <div className="w-full flex flex-row items-center justify-between p-4 space-x-4 rounded-2xl shadow-aurora"
+                style={{
+                    backgroundColor: 'var(--background-secondary)',
+                    border: '1px solid var(--background-trans)'
+                }}>
                 <Input value={value} setValue={setValue} placeholder={t('article.search.placeholder')}
                     autofocus
                     onSubmit={onSearch} />
@@ -261,9 +349,14 @@ function UserAvatar({ className, profile, onClose }: { className?: string, profi
     return (
         <> {config.get<boolean>('login.enabled') && <div className={className + " flex flex-row items-center"}>
             {profile?.avatar ? <>
-                <div className="w-8 relative">
-                    <img src={profile.avatar} alt="Avatar" className="w-8 h-8 rounded-full border" />
-                    <div className="z-50 absolute left-0 top-0 w-10 h-8 opacity-0 hover:opacity-100 duration-300">
+                <div className="w-10 h-10 relative group">
+                    <img src={profile.avatar} alt="Avatar" 
+                        className="w-10 h-10 rounded-full border-2 transition-all duration-300 group-hover:scale-105" 
+                        style={{ borderColor: 'var(--text-accent)' }} />
+                    <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" 
+                        style={{ background: 'var(--main-gradient)' }}></div>
+                    <div className="z-50 absolute left-0 top-0 w-10 h-10 opacity-0 hover:opacity-100 duration-300 flex items-center justify-center rounded-full"
+                        style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
                         <IconSmall label={t('logout')} name="ri-logout-circle-line" onClick={() => {
                             removeCookie("token")
                             window.location.reload()
@@ -272,7 +365,13 @@ function UserAvatar({ className, profile, onClose }: { className?: string, profi
                 </div>
             </> : <>
                 <button onClick={() => setIsOpened(true)} title={label} aria-label={label}
-                    className="flex rounded-full border dark:border-neutral-600 px-2 bg-w aspect-[1] items-center justify-center t-primary bg-button">
+                    className="flex rounded-full px-3 py-2 aspect-square items-center justify-center transition-all duration-300 hover:scale-105"
+                    style={{
+                        backgroundColor: 'var(--background-secondary)',
+                        border: '1px solid var(--background-trans)',
+                        color: 'var(--text-normal)',
+                        boxShadow: 'var(--card-shadow)'
+                    }}>
                     <i className="ri-user-received-line"></i>
                 </button>
             </>}

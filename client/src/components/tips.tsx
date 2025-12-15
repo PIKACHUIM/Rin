@@ -39,8 +39,16 @@ export function TipsPage({ children }: { children: React.ReactNode }) {
     const { t } = useTranslation();
     return (
         <div className="w-full flex flex-row justify-center ani-show">
-            <div className="flex flex-col wauto rounded-2xl bg-w m-2 p-6 items-center justify-center space-y-2">
-                <h1 className="text-xl font-bold t-primary"> Oops! </h1>
+            <div className="flex flex-col wauto rounded-2xl m-2 p-8 items-center justify-center space-y-4 shadow-aurora"
+                style={{
+                    backgroundColor: 'var(--background-secondary)',
+                    border: '1px solid var(--background-trans)'
+                }}>
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mb-2"
+                    style={{ background: 'var(--main-gradient)' }}>
+                    <i className="ri-error-warning-line text-4xl text-white"></i>
+                </div>
+                <h1 className="text-2xl font-bold" style={{ color: 'var(--text-bright)' }}> Oops! </h1>
                 {children}
                 <Button
                     title={t("index.back")}
