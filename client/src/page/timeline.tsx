@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 
 export function TimelinePage() {
     const [feeds, setFeeds] = useState<Partial<Record<number, { id: number; title: string | null; createdAt: Date; }[]>>>()
-    const [length, setLength] = useState(0)
     const ref = useRef(false)
     const { t } = useTranslation()
     function fetchFeeds() {
@@ -18,7 +17,6 @@ export function TimelinePage() {
             headers: headersWithAuth()
         }).then(({ data }) => {
             if (data && typeof data !== 'string') {
-                setLength(data.length)
                 const groups = Object.groupBy(data, ({ createdAt }) => new Date(createdAt).getFullYear())
                 setFeeds(groups)
             }

@@ -132,6 +132,7 @@ export function Markdown({ content }: { content: string }) {
           if (isCodeBlock) {
             return (
               <div className="relative group">
+                {/* @ts-ignore - React 18 type compatibility issue */}
                 <SyntaxHighlighter
                   PreTag="div"
                   className="rounded"
