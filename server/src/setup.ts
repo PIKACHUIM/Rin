@@ -43,6 +43,17 @@ export function setup() {
         )
         .derive({ as: 'global' }, async ({ headers, jwt }) => {
             const authorization = headers['authorization']
+            const jwtSecretHeader = headers['jwt_secret']
+            
+            // 如果请求头中包含正确的JWT_SECRET，则直接返回管理员权限
+            if (jwtSecretHeader === jwt_secret) {
+                return {
+                    uid: 0,
+                    username: 'admin',
+                    admin: true,
+                }
+            }
+            
             if (!authorization) {
                 return {};
             }
