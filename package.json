@@ -25,6 +25,7 @@
     "format:write": "turbo format:write"
   },
   "devDependencies": {
+    "@types/strip-indent": "^4.0.0",
     "autoprefixer": "^10.4.19",
     "elysia": "^1.4.19",
     "i18next-parser": "^9.0.0",
