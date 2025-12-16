@@ -42,8 +42,7 @@ Bun.write('wrangler.toml', stripIndent(`
 name = "${WORKER_NAME}"
 main = "server/src/_worker.ts"
 compatibility_date = "2024-05-29"
-# compatibility_flags = ["nodejs_compat"]
-node_compat = true
+compatibility_flags = ["nodejs_compat"]
 
 [triggers]
 crons = ["*/20 * * * *"]
