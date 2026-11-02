@@ -1,1 +1,0 @@
-export type { App } from './src/server'
