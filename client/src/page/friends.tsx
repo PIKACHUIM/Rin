@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet';
 import { useTranslation } from "react-i18next";
 import { FlatActionButton, FlatPanel, Modal, SearchableSelect } from "@rin/ui";
 import { ShowAlertType, useAlert, useConfirm } from "../components/dialog";
@@ -95,12 +95,7 @@ export function FriendsPage() {
         </Helmet>
         <Waiting for={friendsAvailable.length !== 0 || friendsUnavailable.length !== 0 || status === "idle"}>
             <main className="w-full flex flex-col justify-center items-center mb-8 t-primary ani-show" style={{ marginTop: '10rem' }}>
-                <div className="wauto rounded-2xl p-6" style={{
-                    background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
-                    boxShadow: 'var(--card-shadow)',
-                    border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
-                    backdropFilter: 'blur(10px)'
-                }}>
+                <div className="wauto rounded-2xl p-6 rin-surface">
                 <FriendList title={t('friends.title')} show={friendsAvailable.length > 0} friends={friendsAvailable} />
                 <FriendList title={t('friends.left')} show={friendsUnavailable.length > 0} friends={friendsUnavailable} />
                 <FriendList title={t('friends.review.waiting')} show={waitList.length > 0} friends={waitList} />

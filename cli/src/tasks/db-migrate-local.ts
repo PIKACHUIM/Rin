@@ -8,7 +8,7 @@ import {
   updateMigrationVersion,
 } from "../lib/db-migration";
 
-export async function runLocalDbMigrate(dbName = "rin") {
+export async function runLocalDbMigrate(dbName = "rinblogs-data") {
   const sqlDir = path.join(process.cwd(), "server", "sql");
 
   const type = "local";

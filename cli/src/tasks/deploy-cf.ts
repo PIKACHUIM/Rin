@@ -147,7 +147,7 @@ export async function runCloudflareDeploy(target: "all" | "server" | "client" = 
     return;
   }
 
-  const dbName = renv("DB_NAME", "rin");
+  const dbName = renv("DB_NAME", "rinblogs-data");
   const workerName = renv("WORKER_NAME", "rin-server");
   const taskQueueName = env("TASK_QUEUE_NAME", env("AI_SUMMARY_QUEUE_NAME", `${workerName}-tasks`)) ?? `${workerName}-tasks`;
   const r2BucketName = env("R2_BUCKET_NAME", "");

@@ -7,11 +7,11 @@ export async function runDbCommand(args: string[]) {
   const { values } = parseArgs({
     args: args.slice(1),
     options: {
-      db: { type: "string", default: "rin" },
+      db: { type: "string", default: "rinblogs-data" },
     },
     strict: false,
   });
-  const dbName = (values.db as string) || "rin";
+  const dbName = (values.db as string) || "rinblogs-data";
 
   if (subcommand === "migrate") {
     await runLocalDbMigrate(dbName);

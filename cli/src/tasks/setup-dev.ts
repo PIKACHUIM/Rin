@@ -67,7 +67,7 @@ ADMIN_PASSWORD = "${env.ADMIN_PASSWORD}"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "${env.DB_NAME || "rin"}"
+database_name = "${env.DB_NAME || "rinblogs-data"}"
 database_id = "local"
 
 [[queues.producers]]

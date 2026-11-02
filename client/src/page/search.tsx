@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Helmet } from 'react-helmet-async'
+import { Helmet } from 'react-helmet'
 import { useTranslation } from "react-i18next"
 import { Link, useSearch } from "wouter"
 import { FeedCard } from "../components/feed_card"
