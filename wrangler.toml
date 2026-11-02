@@ -1,20 +1,22 @@
 #:schema node_modules/wrangler/config-schema.json
-# 复制为 wrangler.toml 后按需修改（wrangler.toml 不入库，避免提交本地域名与资源 ID）
+# 仓库内的通用配置模板（供 Cloudflare Deploy Button / 首次部署使用）。
+# 本机部署请改用 wrangler.local.toml（已 gitignore），命令：
+#   wrangler deploy --config wrangler.local.toml
+#
 # 敏感项（JWT_SECRET / RIN_GITHUB_CLIENT_* / S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY）
 # 用 `wrangler secret put <KEY>` 写入，不要放进 [vars]，否则会覆盖线上密钥。
 name = "rinblogs-work"
 main = "server/src/_worker.ts"
 compatibility_date = "2026-01-20"
 compatibility_flags = ["nodejs_compat"]
-account_id = "<CLOUDFLARE_ACCOUNT_ID>"
 
-# 前端与接口同一个 Worker：静态资源走 ASSETS，接口走 /api
-# 自定义域名示例（同一账号内的 zone；不写则只走 workers.dev）
+# 自定义域名路由（示例；同一账号内的 zone）
 # routes = [
-#   { pattern = "coding.example.com/*", zone_name = "example.com" },
+#   { pattern = "blog.example.com/*", zone_name = "example.com" },
 #   { pattern = "api.example.com/*", zone_name = "example.com" }
 # ]
 
+# 前端与接口同一个 Worker：静态资源走 ASSETS，接口走 /api
 [assets]
 directory = "./dist/client"
 binding = "ASSETS"
@@ -22,7 +24,7 @@ binding = "ASSETS"
 [observability]
 enabled = true
 
-# Workers Free 计划每账号仅 5 个 cron 名额，名额不足时先注释掉
+# Workers Free 计划每账号 5 个 cron 名额，名额不足时保持注释
 # [triggers]
 # crons = ["*/20 * * * *"]
 
@@ -31,18 +33,6 @@ NAME = "Rin"
 DESCRIPTION = "A lightweight personal blogging system"
 AVATAR = ""
 PAGE_SIZE = "5"
-S3_FOLDER = "images/"
-S3_CACHE_FOLDER = "cache/"
-S3_REGION = "auto"
-S3_ENDPOINT = ""
-S3_ACCESS_HOST = ""
-S3_BUCKET = ""
-S3_FORCE_PATH_STYLE = "false"
-# s3: 缓存写 S3/R2；database: 缓存写 D1（无需对象存储）
-CACHE_STORAGE_MODE = "s3"
-WEBHOOK_URL = ""
-RSS_TITLE = ""
-RSS_DESCRIPTION = ""
 
 [[d1_databases]]
 binding = "DB"

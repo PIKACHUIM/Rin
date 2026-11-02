@@ -1,176 +1,156 @@
-![封面](./docs/docs/public/rin-logo.png)
+# PikaBlog
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/PIKACHUIM/Rin)
+[![线上站点](https://img.shields.io/badge/live-coding.opkg.cn-2ea44f?style=for-the-badge)](https://coding.opkg.cn)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](./LICENSE)
 
 [English](./README.md) | 简体中文
 
-![GitHub commit activity](https://img.shields.io/github/commit-activity/w/openRin/Rin?style=for-the-badge)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/openRin/Rin/main?style=for-the-badge)
-![GitHub top language](https://img.shields.io/github/languages/top/openRin/Rin?style=for-the-badge)
-![GitHub License](https://img.shields.io/github/license/openRin/Rin?style=for-the-badge)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/openRin/Rin/deploy.yml?style=for-the-badge)
+PikaBlog 是基于 [openRin/Rin](https://github.com/openRin/Rin) 的个人博客，跑在 Cloudflare 全家桶上：
+**单个 Worker 同时托管前端静态资源与 `/api`**，D1 存数据，R2 / S3 存图片，Queues 跑异步任务，Workers AI 生成摘要。
 
-[![Discord](https://img.shields.io/badge/Discord-openRin-red?style=for-the-badge&color=%236e7acc)](https://discord.gg/JWbSTHvAPN)
-[![Telegram](https://img.shields.io/badge/Telegram-openRin-red?style=for-the-badge&color=%233390EC)](https://t.me/openRin)
+线上站点：<https://coding.opkg.cn>
 
-## 项目简介
+## 相比上游做了什么
 
-Rin 是一个基于 Cloudflare 开发者平台构建的现代化、无服务器博客系统，完全利用 Cloudflare Pages 托管、Workers 提供无服务器函数、D1 作为 SQLite 数据库、R2 进行对象存储。仅需一个指向 Cloudflare 的域名即可部署你的个人博客，无需服务器运维。
+- **前后端合并为单个 Worker**：前端构建产物通过 `[assets]` 上传，`/api` 与页面同源，没有 CORS、不用维护两套域名；SPA 深链由 Worker 回退 `index.html`
+- **模板化主题系统**：内置 5 套主题（`official` / `aurora` / `fuwari` / `noir` / `zen`），后台可视化切换，支持自定义模板注册
+- **多域名登录**：OAuth `state` 里带签名后的来源域名，从任意已路由域名登录都能跳回原域名，不再依赖 `FRONTEND_URL`
+- **按域名的 SEO 输出**：`sitemap.xml` / `robots.txt` / RSS 全部用当前请求的 origin 生成绝对链接，多域名互不串号
+- **数据层迁移到 D1 `rinblogs-data`**：补齐最新 schema（评论、说说、缓存表、AI 摘要字段与索引）
+- 修复上游遗留问题：`react-helmet-async` 崩溃、旧主题 CSS 变量残留等
 
-## 在线演示
+## 功能
 
-https://xeu.life
+- GitHub OAuth 登录，首个注册用户自动成为管理员
+- Markdown 编辑器 + 实时本地草稿、拖拽/粘贴上传图片、自定义文章别名（`/about`）
+- 草稿 / 不公开 / 公开三种可见性，支持置顶
+- 话题标签、时间线、说说（Moments）、搜索、友链（定时健康检查）
+- 评论与审核、Webhook 通知、AI 摘要（Workers AI + Queue）
+- RSS / Atom / JSON Feed、`sitemap.xml`、`robots.txt`
+- 5 套主题模板 + 自定义壁纸 + 强调色，明暗模式跟随系统
+- 中 / 繁 / 英 / 日 四语言界面
 
-## 功能特性
+## 架构
 
-- **用户认证与管理**：支持 GitHub OAuth 登录。首个注册用户自动成为管理员，后续用户作为普通成员加入。
-- **内容创作**：通过丰富的编辑器撰写和编辑文章。
-- **实时自动保存**：本地草稿实时自动保存，不同文章之间互不干扰。
-- **隐私控制**：可将文章标记为“仅自己可见”，用作私有草稿或个人笔记，并支持跨设备同步。
-- **图片管理**：通过拖放或粘贴上传图片至兼容 S3 的存储（如 Cloudflare R2），并自动生成链接。
-- **自定义别名**：为文章设置友好的 URL，例如 `https://yourblog.com/about`。
-- **不公开文章**：可选择将文章隐藏于首页列表之外。
-- **友情链接**：添加友博客链接，后端每 20 分钟自动检查链接可用性并更新状态。
-- **评论系统**：支持回复评论，并具备评论删除管理功能。
-- **Webhook 通知**：通过可配置的 Webhook 接收新评论的实时提醒。
-- **特色图片**：自动识别文章内首张图片，并将其作为列表页的封面图展示。
-- **标签解析**：输入如 `#博客 #Cloudflare` 的标签文本，自动解析并展示为标签。
-- **类型安全**：通过 `@rin/api` 包在客户端和服务器之间共享 TypeScript 类型，实现端到端类型安全。
-- ……更多功能请访问 https://xeu.life 探索。
+```text
+worker: rinblogs-work
+├── [assets] ./dist/client   → 前端构建产物
+├── /api/*                   → Hono 应用（server/src）
+├── /sitemap.xml /robots.txt → 按请求域名生成
+└── /rss.xml 等              → 按请求域名实时生成
 
-## 文档
+绑定
+├── DB          D1    rinblogs-data
+├── TASK_QUEUE  Queue rinblogs-work-tasks（AI 摘要 / 兼容任务）
+├── AI          Workers AI
+└── ASSETS      ./dist/client
+```
 
-### 快速开始
+```text
+client/            React + Vite 前端（页面、组件、主题、i18n）
+server/            Hono Worker 后端（services / db / runtime / queue）
+packages/api/      前后端共享的请求响应类型
+packages/config/   站点配置默认值（含主题默认值）
+packages/ui/       通用 UI 组件
+cli/               部署、数据库迁移等命令行工具
+```
+
+## 本地开发
+
+需要 [Bun](https://bun.sh) 1.3+。
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/openRin/Rin.git && cd Rin
-
-# 2. 安装依赖
+git clone https://github.com/PIKACHUIM/Rin.git
+cd Rin
 bun install
 
-# 3. 配置环境变量
-cp .env.example .env.local
-# 编辑 .env.local 填入你的配置信息
-
-# 4. 启动开发服务器
-bun run dev
+cp .env.example .env.local   # 按需填写本地配置
+bun run dev                  # 前端 5173 / Worker 11498
 ```
 
-访问 http://localhost:5173 开始开发！
+打开 <http://localhost:5173>。
 
-### 测试
+| 命令 | 说明 |
+| --- | --- |
+| `bun run dev` | 同时启动前端与 Worker |
+| `bun run dev:client` / `dev:server` | 只启动其中一侧 |
+| `bun run check` | TypeScript 类型检查 |
+| `bun run test` | 全部测试（`test:client` / `test:server` 单独跑） |
+| `bun run db:migrate` | 对本地 D1 执行迁移 |
+| `bun run build` | 构建前端 + 服务端 dry-run |
 
-运行测试套件以确保一切正常：
+## 部署到 Cloudflare
+
+### 方式一：一键按钮
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/PIKACHUIM/Rin)
+
+按钮会克隆本仓库，用仓库根目录的 `wrangler.toml` 部署 Worker。由于 D1 必须填真实的 `database_id`，
+首次部署后需要补绑定；想一步到位请用方式二（会自动创建 D1 / Queue 并跑迁移）。
+
+### 方式二：CLI 一键部署（推荐）
 
 ```bash
-# 运行所有测试（客户端 + 服务器）
-bun run test
+export CLOUDFLARE_API_TOKEN=...      # 需要 Workers Scripts / D1 / Queues 权限
+export CLOUDFLARE_ACCOUNT_ID=...
 
-# 仅运行服务器测试
-bun run test:server
-
-# 运行测试并设置覆盖率
-bun run test:coverage
+bun run deploy                       # 前端 + 后端
+bun run deploy -- --server           # 只部署 Worker
+bun run deploy -- --client           # 只部署前端
 ```
 
-### 一键部署
+CLI 会依次：生成 `wrangler.toml` → 创建 D1（`DB_NAME`，默认 `rinblogs-data`）→ 创建队列 →
+执行数据库迁移 → 构建前端 → 部署 Worker → 同步密钥。
 
-使用一条命令即可将前端和后端同时部署到 Cloudflare：
+### 方式三：手动 wrangler
 
 ```bash
-# 部署所有内容（前端+后端）
-bun run deploy
-
-# 仅部署后端
-bun run deploy:server
-
-# 仅部署前端
-bun run deploy:client
+cp wrangler.toml wrangler.local.toml   # 本地配置不入库
+# 填 account_id、routes、D1 database_id，队列名保持默认
+bun --filter './client' build
+npx wrangler deploy --config wrangler.local.toml
 ```
 
-**必需的环境变量：**
+### 必须配置的密钥
 
-- `CLOUDFLARE_API_TOKEN` - 您的 Cloudflare API 令牌
-- `CLOUDFLARE_ACCOUNT_ID` - 您的 Cloudflare 帐户 ID
+用 `wrangler secret put <KEY>` 写入，不要放进 `[vars]`：
 
-**可选的环境变量：**
+| 变量 | 说明 |
+| --- | --- |
+| `JWT_SECRET` | 登录令牌签名密钥 |
+| `RIN_GITHUB_CLIENT_ID` / `RIN_GITHUB_CLIENT_SECRET` | GitHub OAuth App（回调 `/api/user/github/callback`） |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | 图床密钥（R2 或兼容 S3） |
 
-- `WORKER_NAME` - 后端工作进程名称（默认值：`rin-server`）
-- `PAGES_NAME` - 前端页面名称（默认值：`rin-client`）
-- `DB_NAME` - D1 数据库名称（默认值：`rin`）
-- `R2_BUCKET_NAME` - R2 存储桶名称。设置后，部署会自动推导对应的 `S3_*` 配置；未设置时，不会自动选择任何 bucket。
+### 可选站点变量（`[vars]`）
 
-部署脚本将自动执行以下操作：
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `NAME` / `DESCRIPTION` / `AVATAR` | `Rin` / 空 | 站点名称、描述、头像 |
+| `PAGE_SIZE` | `5` | 列表每页数量 |
+| `S3_ENDPOINT` / `S3_BUCKET` / `S3_ACCESS_HOST` | 空 | 对象存储地址、桶名、公开域名 |
+| `S3_FOLDER` / `S3_CACHE_FOLDER` | `images/` / `cache/` | 上传与缓存前缀 |
+| `CACHE_STORAGE_MODE` | `s3` | 改成 `database` 则缓存写 D1 |
+| `WEBHOOK_URL` | 空 | 新评论等事件通知 |
+| `RSS_TITLE` / `RSS_DESCRIPTION` | 空 | Feed 标题与描述 |
 
-- 自动检测并创建 D1 数据库如果不存在
-- 仅在显式设置 `R2_BUCKET_NAME` 时，自动推导对应的 `S3_*` 存储配置
-- 部署后端到 Workers
-- 构建前端并将其部署到 Pages
-- 运行数据库迁移
+> `FRONTEND_URL` 已移除：sitemap / robots / RSS 一律按请求域名生成，多域名部署不会再串。
 
-### GitHub Actions Workflows
+## 主题
 
-存储库包含多个自动化工作流程：
+后台「设置 → 个性化 → 主题模板」可切换 5 套模板，并支持自定义壁纸与强调色：
 
-- **`ci.yml`** - 每次推送/PR 都会运行类型检查和格式验证
-- **`test.yml`** - 运行全面的测试（服务器+客户端），并生成覆盖率报告
-- **`build.yml`** - 构建项目并触发部署
-- **`deploy.yml`** - 部署到 Cloudflare Pages 和 Workers
+| 模板 | 风格 |
+| --- | --- |
+| `official` | 上游默认：中性灰白、白卡片、无渐变无模糊（当前默认） |
+| `aurora` | 冷调渐变 + 玻璃拟态 |
+| `fuwari` | 柔和粉彩、大圆角 |
+| `noir` | 黑白强对比、小圆角、无模糊 |
+| `zen` | 暖纸底色 + 衬线标题 |
 
-**必备变量 (Repository Settings → Secrets and variables → Actions):**
+新增主题：在 `client/src/theme/custom-templates.ts` 追加一项（明暗两套令牌）即可，设置页会自动出现；
+插件式场景可调用 `registerThemeTemplate()` 运行时注册。
 
-- `CLOUDFLARE_API_TOKEN` - 您的 Cloudflare API 令牌，包含 Workers 和 Pages 权限
-- `CLOUDFLARE_ACCOUNT_ID` - 您的 Cloudflare 帐户 ID
+## 许可证
 
-**可选配置(Repository Settings → Secrets and variables → Variables):**
-
-- `WORKER_NAME`, `PAGES_NAME`, `DB_NAME` - 资源名称
-- `NAME`, `DESCRIPTION`, `AVATAR` - 站点配置
-- `R2_BUCKET_NAME` - 要使用的特定 R2 存储桶
-
-完整文档请访问 https://docs.openrin.org。
-
-## 社区与支持
-
-- 加入我们的 https://discord.gg/JWbSTHvAPN 参与讨论或获取帮助。
-- 关注 https://t.me/openRin 频道获取最新动态。
-- 发现 Bug 或有功能建议？欢迎在 GitHub 上提交 Issue。
-
-## Star 历史
-
-<a href="https://star-history.dera.page/#openRin/Rin&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=openRin/Rin&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=openRin/Rin&type=Date" />
-   <img alt="Star 历史图表" src="https://star-history.dera.page/svg?repos=openRin/Rin&type=Date" />
- </picture>
-</a>
-
-## 参与贡献
-
-我们欢迎各种形式的贡献——代码、文档、设计和想法。请查阅我们的[贡献指南](https://docs.openrin.org/guide/contribution.html)，一起参与 Rin 的构建！
-
-## License
-
-```
-MIT License
-
-Copyright (c) 2024 Xeu
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+MIT。本项目源自 [openRin/Rin](https://github.com/openRin/Rin)，版权归原作者所有；衍生部分同样以 MIT 发布。

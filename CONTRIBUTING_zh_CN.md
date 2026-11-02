@@ -36,7 +36,7 @@ cp .\cli\templates\git-commit-msg.sh .\.git\hooks\commit-msg
     bun i
     ```
 
-4. 将 `wrangler.example.toml` 文件复制到 `wrangler.toml` 并填写必要信息
+4. 将 `wrangler.toml` 复制为 `wrangler.local.toml` 并填写必要信息，部署时使用 `--config wrangler.local.toml`
    > [!TIP]   
    > 通常情况下，您只需要填写 `database_name` 和 `database_id` 两项\
    > S3 相关配置非必须，但是如果您想要使用图片上传功能，您需要填写 S3 配置
