@@ -4,6 +4,7 @@ import type { ConfigWrapper } from "@rin/config";
 import type { Profile } from "../state/profile";
 import { ClientConfigContext } from "../state/config";
 import { ProfileContext } from "../state/profile";
+import { ThemeRuntime } from "../theme/runtime";
 
 export function AppProviders({
   children,
@@ -17,6 +18,10 @@ export function AppProviders({
   return (
     <ClientConfigContext.Provider value={config}>
       <ProfileContext.Provider value={profile}>
+        <ThemeRuntime
+          template={config.get<string>("theme.template")}
+          wallpaper={config.get<string>("theme.wallpaper")}
+        />
         <Helmet>
           <link rel="icon" href="/favicon.ico" />
         </Helmet>

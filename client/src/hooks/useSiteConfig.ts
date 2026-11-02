@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { ClientConfigContext } from "../state/config";
 import { normalizeFeedCardVariant } from "../components/feed-card-options";
 import { normalizeFeedLayout } from "../components/feed-layout-options";
+import { normalizeThemeTemplate } from "../theme/templates";
 
 // Site configuration keys
 export const SITE_CONFIG_KEYS = {
@@ -14,6 +15,8 @@ export const SITE_CONFIG_KEYS = {
     feedCardVariant: "feed.card_variant",
     headerLayout: "header.layout",
     themeColor: "theme.color",
+    themeTemplate: "theme.template",
+    themeWallpaper: "theme.wallpaper",
 } as const;
 
 // Hook to get site configuration
@@ -37,6 +40,8 @@ export function useSiteConfig() {
         feedCardVariant: normalizeFeedCardVariant(config.get<string>(SITE_CONFIG_KEYS.feedCardVariant) || "default"),
         headerLayout: config.get<string>(SITE_CONFIG_KEYS.headerLayout) || "classic",
         themeColor: config.get<string>(SITE_CONFIG_KEYS.themeColor) || "#fc466b",
+        themeTemplate: normalizeThemeTemplate(config.get<string>(SITE_CONFIG_KEYS.themeTemplate)),
+        themeWallpaper: config.get<string>(SITE_CONFIG_KEYS.themeWallpaper) || "",
     };
 }
 

@@ -500,6 +500,27 @@
         "masonry": "A staggered multi-column layout that packs cards by height."
       }
     },
+    "theme_template": {
+      "title": "Theme template",
+      "desc": "Pick the overall visual style. A template defines palette, radii, shadows and the hero background.",
+      "options": {
+        "aurora": "Aurora",
+        "fuwari": "Fuwari",
+        "noir": "Noir",
+        "zen": "Zen"
+      },
+      "preview": {
+        "aurora": "Cool gradients with frosted glass, tuned for tech and product sites.",
+        "fuwari": "Soft pastels and generous radii for a light, airy feel.",
+        "noir": "High-contrast monochrome with crisp edges and tighter density.",
+        "zen": "Warm paper tones and serif headings, comfortable for long reading."
+      }
+    },
+    "theme_wallpaper": {
+      "title": "Hero wallpaper",
+      "desc": "Image URL used as the top-of-page backdrop. Leave empty to use the template gradient only.",
+      "label": "Wallpaper URL"
+    },
     "theme_color": {
       "title": "Theme color",
       "desc": "Choose the accent color used by buttons, highlights, and interactive elements",

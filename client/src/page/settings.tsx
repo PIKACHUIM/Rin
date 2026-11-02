@@ -15,8 +15,11 @@ import {
 } from "../components/site-header/layout-options";
 import { FEED_CARD_VARIANTS, normalizeFeedCardVariant } from "../components/feed-card-options";
 import { FeedCardPreview } from "../components/feed-card-preview";
+import { ThemeTemplatePreview } from "../components/theme-template-preview";
 import { FEED_LAYOUT_OPTIONS, normalizeFeedLayout } from "../components/feed-layout-options";
 import { useSiteConfig } from "../hooks/useSiteConfig";
+import { applyThemeTemplate, applyThemeWallpaper } from "../theme/apply";
+import { normalizeThemeTemplate, THEME_TEMPLATES } from "../theme/templates";
 import { applyThemeColor, normalizeThemeColor } from "../utils/theme-color";
 import { AISummarySettings } from "./settings-ai";
 import { ItemButton, ItemImageInput, ItemInput, ItemSwitch, ItemTitle, ItemWithUpload } from "./settings-items";
@@ -69,6 +72,24 @@ export function Settings() {
     return typeof nextDraft.clientConfig["theme.color"] === "string" ? nextDraft.clientConfig["theme.color"] : undefined;
   }
 
+  function getDraftThemeTemplate(nextDraft: SettingsDraft) {
+    return typeof nextDraft.clientConfig["theme.template"] === "string"
+      ? nextDraft.clientConfig["theme.template"]
+      : undefined;
+  }
+
+  function getDraftThemeWallpaper(nextDraft: SettingsDraft) {
+    return typeof nextDraft.clientConfig["theme.wallpaper"] === "string"
+      ? nextDraft.clientConfig["theme.wallpaper"]
+      : undefined;
+  }
+
+  function applyDraftAppearance(nextDraft: SettingsDraft) {
+    applyThemeColor(getDraftThemeColor(nextDraft));
+    applyThemeTemplate(getDraftThemeTemplate(nextDraft));
+    applyThemeWallpaper(getDraftThemeWallpaper(nextDraft));
+  }
+
   useEffect(() => {
     if (ref.current) return;
     loadSettingsConfigState()
@@ -78,7 +99,7 @@ export function Settings() {
         initialDraftRef.current = state.draft;
         setHasStoredAiApiKey(state.hasStoredAiApiKey);
         mergeSessionConfig(state.draft.clientConfig);
-        applyThemeColor(getDraftThemeColor(state.draft));
+        applyDraftAppearance(state.draft);
       })
       .catch((err: any) => {
         showAlert(t("settings.get_config_failed$message", { message: err.message }));
@@ -89,7 +110,7 @@ export function Settings() {
     ref.current = true;
 
     return () => {
-      applyThemeColor(getDraftThemeColor(initialDraftRef.current));
+      applyDraftAppearance(initialDraftRef.current);
     };
   }, [showAlert, t]);
 
@@ -97,6 +118,8 @@ export function Settings() {
   const aiValue = useMemo(() => buildAIConfigDraftValue(draft, hasStoredAiApiKey), [draft, hasStoredAiApiKey]);
   const hasUnsavedChanges = !areSettingsDraftsEqual(draft, initialDraft);
   const themeColorValue = normalizeThemeColor(String(clientConfig.get("theme.color") ?? "#fc466b"));
+  const themeTemplateValue = normalizeThemeTemplate(String(clientConfig.get("theme.template") ?? "aurora"));
+  const themeWallpaperValue = String(clientConfig.get("theme.wallpaper") ?? "");
   const feedLayoutValue = normalizeFeedLayout(String(clientConfig.get("feed.layout") ?? "list"));
   const feedCardVariantValue = normalizeFeedCardVariant(String(clientConfig.get("feed.card_variant") ?? "default"));
   const previewSiteName = String(clientConfig.get("site.name") ?? clientConfig.default("site.name") ?? "Rin");
@@ -108,7 +131,7 @@ export function Settings() {
 
   function handleReset() {
     setDraft(initialDraft);
-    applyThemeColor(getDraftThemeColor(initialDraft));
+    applyDraftAppearance(initialDraft);
   }
 
   async function handleSave() {
@@ -228,6 +251,52 @@ export function Settings() {
           />
 
           <ItemTitle title={t("settings.personalization.title")} />
+          <div className="w-full">
+            <SettingsCard>
+              <SettingsCardRow
+                header={
+                  <SettingsCardHeader
+                    title={t("settings.theme_template.title")}
+                    description={t("settings.theme_template.desc")}
+                  />
+                }
+                action={
+                  <div className="text-sm font-medium t-primary">
+                    {t(`settings.theme_template.options.${themeTemplateValue}`)}
+                  </div>
+                }
+              />
+              <SettingsCardBody>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  {THEME_TEMPLATES.map((template) => (
+                    <ThemeTemplatePreview
+                      key={template.id}
+                      templateId={template.id}
+                      accentColor={template.id === "aurora" ? themeColorValue : template.accent}
+                      selected={themeTemplateValue === template.id}
+                      title={t(`settings.theme_template.options.${template.id}`)}
+                      description={t(`settings.theme_template.preview.${template.id}`)}
+                      onClick={() => {
+                        setConfigValue("client", "theme.template", template.id);
+                        applyThemeTemplate(template.id);
+                      }}
+                    />
+                  ))}
+                </div>
+              </SettingsCardBody>
+            </SettingsCard>
+          </div>
+          <ItemInput
+            title={t("settings.theme_wallpaper.title")}
+            description={t("settings.theme_wallpaper.desc")}
+            configKeyTitle={t("settings.theme_wallpaper.label")}
+            value={themeWallpaperValue}
+            placeholder="https://example.com/wallpaper.jpg"
+            onChange={(value) => {
+              setConfigValue("client", "theme.wallpaper", value);
+              applyThemeWallpaper(value);
+            }}
+          />
           <div className="w-full">
             <SettingsCard>
               <SettingsCardRow

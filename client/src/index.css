@@ -1,5 +1,6 @@
 @import "./base.css";
 @import "@rin/ui/styles.css";
+@import "./theme/theme.css";
 
 /* cantarell-latin-400-normal */
 @font-face {

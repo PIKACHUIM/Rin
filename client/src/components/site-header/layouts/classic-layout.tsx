@@ -11,7 +11,7 @@ export const classicLayoutDefinition: HeaderLayoutDefinition = {
       <div className="hidden w-full items-center justify-between md:flex">
         <BrandLink siteConfig={siteConfig} className="mr-8 hidden flex-row items-center md:flex" />
         <div className="flex min-w-0 flex-1 items-center justify-center">
-          <div className="scrollbar-none min-w-0 max-w-full overflow-x-auto rounded-full bg-w px-2 shadow-xl shadow-light t-primary">
+          <div className="scrollbar-none rin-glass min-w-0 max-w-full overflow-x-auto rounded-full px-2 shadow-xl shadow-light t-primary">
             <div className="flex min-w-max flex-row items-center whitespace-nowrap">
               <NavBar menu={false} itemClassName="whitespace-nowrap px-3 py-3 md:p-3 text-[15px]" />
             </div>
@@ -28,7 +28,7 @@ export const classicLayoutDefinition: HeaderLayoutDefinition = {
     return (
       <div className="flex w-full flex-row items-center justify-center md:hidden">
         <div className="w-full flex-row items-center justify-center transition-all duration-500">
-          <div className="flex flex-row items-center rounded-full bg-w px-2 shadow-xl shadow-light t-primary">
+          <div className="rin-glass flex flex-row items-center rounded-full px-2 shadow-xl shadow-light t-primary">
             <BrandLink
               siteConfig={siteConfig}
               compact
