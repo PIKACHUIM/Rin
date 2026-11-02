@@ -5,6 +5,7 @@ import type { AppContext } from "../core/hono-types";
 import { profileAsync } from "../core/server-timing";
 import { setJWTCookie } from "../core/hono-middleware";
 import { users } from "../db/schema";
+import { createOAuthState, readOAuthStateOrigin } from "../utils/oauth-state";
 import {
     BadRequestError,
     ForbiddenError,
@@ -29,20 +30,16 @@ export function UserService(): Hono {
             throw new BadRequestError('Referer header is required');
         }
 
-        // Build callback URL from referer
-        const refererUrl = new URL(referer);
-        const callbackUrl = new URL('/callback', refererUrl.origin);
+        // 登录来源域名写进签名 state：回调落在任意已路由域名时都能跳回原域名
+        const origin = new URL(referer).origin;
+        const state = await createOAuthState(c.env.JWT_SECRET ?? '', origin);
 
-        setCookie(c, 'redirect_to', callbackUrl.toString(), {
+        setCookie(c, 'state', state, {
             path: '/',
+            sameSite: 'Lax',
         });
 
-        const genState = await profileAsync(c, 'user_oauth_state', () => Promise.resolve(oauth2.generateState()));
-        setCookie(c, 'state', genState, {
-            path: '/',
-        });
-
-        return c.redirect(oauth2.createRedirectUrl(genState, "GitHub"), 302);
+        return c.redirect(oauth2.createRedirectUrl(state, "GitHub"), 302);
     });
 
     // GET /user/github/callback - GitHub OAuth callback
@@ -57,12 +54,12 @@ export function UserService(): Hono {
 
         const query = c.req.query();
         const stateCookie = getCookie(c, 'state');
-
-        console.log('param_state', query.state);
-        console.log('cookie_state', stateCookie);
+        // 跨域名回调时 cookie 不在同一 host 上，改为校验签名取出登录来源域名
+        const stateOrigin = await readOAuthStateOrigin(c.env.JWT_SECRET ?? '', query.state);
+        const sameDomainState = Boolean(stateCookie && query.state === stateCookie);
 
         // Verify state to prevent CSRF attacks
-        if (query.state !== stateCookie) {
+        if (!sameDomainState && !stateOrigin) {
             throw new BadRequestError('Invalid state parameter');
         }
 
@@ -137,8 +134,7 @@ export function UserService(): Hono {
             });
         }
 
-        const redirectTo = getCookie(c, 'redirect_to');
-        const redirect_url = new URL(redirectTo || '/');
+        const redirect_url = new URL('/callback', stateOrigin ?? new URL(c.req.url).origin);
         // Add token to URL for frontend to store (for cross-domain auth)
         if (authToken) {
             redirect_url.searchParams.set('token', authToken);

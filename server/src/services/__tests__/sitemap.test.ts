@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { SitemapService, sitemapCrontab } from "../sitemap";
+import { SitemapService } from "../sitemap";
 import { cleanupTestDB, createMockEnv, setupTestApp } from "../../../tests/fixtures";
 
 describe("SitemapService", () => {
@@ -63,14 +63,13 @@ describe("SitemapService", () => {
     cleanupTestDB(requestCtx.sqlite);
   });
 
-  it("uses FRONTEND_URL for canonical URLs and persistent storage", async () => {
-    const keys: string[] = [];
+  it("always uses the request origin and never touches shared storage", async () => {
+    let putCalls = 0;
     const env = createMockEnv({
-      FRONTEND_URL: "https://canonical.example/",
       R2_BUCKET: {
         get: async () => null,
-        put: async (key: string) => {
-          keys.push(key);
+        put: async () => {
+          putCalls += 1;
           return null;
         },
       } as unknown as R2Bucket,
@@ -80,50 +79,12 @@ describe("SitemapService", () => {
     ctx.sqlite.exec(`INSERT INTO feeds (id, title, content, uid, draft, listed) VALUES (1, 'Published', 'Content', 1, 0, 1)`);
 
     const sitemap = await ctx.app.request("https://other.example/sitemap.xml", { method: "GET" }, env);
-    expect(await sitemap.text()).toContain("https://canonical.example/feed/1");
+    expect(await sitemap.text()).toContain("https://other.example/feed/1");
     const robots = await ctx.app.request("https://other.example/robots.txt", { method: "GET" }, env);
-    expect(await robots.text()).toContain("Sitemap: https://canonical.example/sitemap.xml");
-    expect(keys).toEqual(["cache/sitemap.xml", "cache/robots.txt"]);
-
-    cleanupTestDB(ctx.sqlite);
-  });
-});
-
-describe("sitemapCrontab", () => {
-  it("does not write sitemap or robots caches without FRONTEND_URL", async () => {
-    let putCalls = 0;
-    const env = createMockEnv({
-      R2_BUCKET: {
-        put: async () => {
-          putCalls += 1;
-          return null;
-        },
-      } as unknown as R2Bucket,
-    });
-    const ctx = await setupTestApp(SitemapService, env);
-
-    await sitemapCrontab(env, ctx.db);
-
+    expect(await robots.text()).toContain("Sitemap: https://other.example/sitemap.xml");
     expect(putCalls).toBe(0);
-    cleanupTestDB(ctx.sqlite);
-  });
 
-  it("writes sitemap and robots caches when FRONTEND_URL is configured", async () => {
-    const keys: string[] = [];
-    const env = createMockEnv({
-      FRONTEND_URL: "https://canonical.example",
-      R2_BUCKET: {
-        put: async (key: string) => {
-          keys.push(key);
-          return null;
-        },
-      } as unknown as R2Bucket,
-    });
-    const ctx = await setupTestApp(SitemapService, env);
-
-    await sitemapCrontab(env, ctx.db);
-
-    expect(keys).toEqual(["cache/sitemap.xml", "cache/robots.txt"]);
     cleanupTestDB(ctx.sqlite);
   });
 });
+

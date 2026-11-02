@@ -132,7 +132,7 @@ describe('UserService', () => {
             expect(data.error.message).toBe('GitHub OAuth is not configured');
         });
 
-        it('should set redirect_to cookie', async () => {
+        it('should set a signed state cookie carrying the login origin', async () => {
             const res = await app.request('/github', {
                 method: 'GET',
                 headers: { 'Referer': 'http://localhost:5173/feed/123' }
@@ -140,7 +140,10 @@ describe('UserService', () => {
             
             expect(res.status).toBe(302);
             const setCookie = res.headers.get('Set-Cookie');
-            expect(setCookie).toContain('redirect_to');
+            expect(setCookie).toContain('state=');
+            // state = <nonce>.<base64url(origin)>.<hmac>
+            const stateValue = /state=([^;]+)/.exec(setCookie ?? '')?.[1] ?? '';
+            expect(stateValue.split('.')).toHaveLength(3);
         });
     });
 
@@ -167,6 +170,38 @@ describe('UserService', () => {
                 expect(res.status).toBe(302);
                 const location = res.headers.get('Location');
                 expect(location).toContain('/callback');
+            } finally {
+                global.fetch = originalFetch;
+            }
+        });
+
+        it('redirects back to the originating domain without a state cookie', async () => {
+            const startResponse = await app.request('/github', {
+                method: 'GET',
+                headers: { 'Referer': 'https://cross.example/feed/1' }
+            }, env);
+            const state = /state=([^;]+)/.exec(startResponse.headers.get('Set-Cookie') ?? '')?.[1];
+            expect(state).toBeTruthy();
+
+            const originalFetch = global.fetch;
+            global.fetch = async () => {
+                return new Response(JSON.stringify({
+                    id: 'gh_123',
+                    login: 'user1',
+                    name: 'User One',
+                    avatar_url: 'https://github.com/avatar.png'
+                }), { status: 200 });
+            };
+
+            try {
+                const res = await app.request(`/github/callback?code=valid_code&state=${encodeURIComponent(state!)}`, {
+                    method: 'GET',
+                }, env);
+
+                expect(res.status).toBe(302);
+                const location = res.headers.get('Location') ?? '';
+                expect(location.startsWith('https://cross.example/callback')).toBe(true);
+                expect(location).toContain('token=');
             } finally {
                 global.fetch = originalFetch;
             }
