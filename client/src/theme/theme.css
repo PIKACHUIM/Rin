@@ -129,6 +129,19 @@ h3,
   -webkit-backdrop-filter: none;
 }
 
+/* 官方模板：沿用上游的实心表面与极淡阴影，关闭玻璃模糊与描边 */
+[data-theme-template="official"] .rin-glass,
+[data-theme-template="official"] .rin-glass-strong {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background-color: rgb(var(--rin-surface-rgb));
+  border-color: transparent;
+}
+
+[data-theme-template="official"] body::after {
+  background: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rin-surface-hover,
   body::before {

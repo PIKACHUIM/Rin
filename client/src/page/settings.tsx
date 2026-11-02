@@ -19,7 +19,7 @@ import { ThemeTemplatePreview } from "../components/theme-template-preview";
 import { FEED_LAYOUT_OPTIONS, normalizeFeedLayout } from "../components/feed-layout-options";
 import { useSiteConfig } from "../hooks/useSiteConfig";
 import { applyThemeTemplate, applyThemeWallpaper } from "../theme/apply";
-import { normalizeThemeTemplate, THEME_TEMPLATES } from "../theme/templates";
+import { normalizeThemeTemplate, DEFAULT_THEME_TEMPLATE, THEME_TEMPLATES } from "../theme/templates";
 import { applyThemeColor, normalizeThemeColor } from "../utils/theme-color";
 import { AISummarySettings } from "./settings-ai";
 import { ItemButton, ItemImageInput, ItemInput, ItemSwitch, ItemTitle, ItemWithUpload } from "./settings-items";
@@ -118,7 +118,7 @@ export function Settings() {
   const aiValue = useMemo(() => buildAIConfigDraftValue(draft, hasStoredAiApiKey), [draft, hasStoredAiApiKey]);
   const hasUnsavedChanges = !areSettingsDraftsEqual(draft, initialDraft);
   const themeColorValue = normalizeThemeColor(String(clientConfig.get("theme.color") ?? "#fc466b"));
-  const themeTemplateValue = normalizeThemeTemplate(String(clientConfig.get("theme.template") ?? "aurora"));
+  const themeTemplateValue = normalizeThemeTemplate(String(clientConfig.get("theme.template") ?? DEFAULT_THEME_TEMPLATE));
   const themeWallpaperValue = String(clientConfig.get("theme.wallpaper") ?? "");
   const feedLayoutValue = normalizeFeedLayout(String(clientConfig.get("feed.layout") ?? "list"));
   const feedCardVariantValue = normalizeFeedCardVariant(String(clientConfig.get("feed.card_variant") ?? "default"));
@@ -272,7 +272,7 @@ export function Settings() {
                     <ThemeTemplatePreview
                       key={template.id}
                       templateId={template.id}
-                      accentColor={template.id === "aurora" ? themeColorValue : template.accent}
+                      accentColor={themeColorValue}
                       selected={themeTemplateValue === template.id}
                       title={t(`settings.theme_template.options.${template.id}`)}
                       description={t(`settings.theme_template.preview.${template.id}`)}

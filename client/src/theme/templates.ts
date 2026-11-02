@@ -1,10 +1,52 @@
+import { CUSTOM_THEME_TEMPLATES } from "./custom-templates";
 import type { ThemeTemplate } from "./types";
 
 /**
  * 内置主题模板注册表。
- * 新增模板只需在此追加一项，设置页与运行时会自动识别（模板化配置）。
+ * 新增模板：内置主题加在 BUILTIN_THEME_TEMPLATES，站点自定义主题
+ * 加在 ./custom-templates.ts，两者会自动合并并被设置页识别。
  */
-export const THEME_TEMPLATES: ThemeTemplate[] = [
+const BUILTIN_THEME_TEMPLATES: ThemeTemplate[] = [
+  {
+    id: "official",
+    accent: "#fc466b",
+    light: {
+      canvas: "245 245 245",
+      surface: "255 255 255",
+      surfaceMuted: "245 245 245",
+      surfaceHover: "229 229 229",
+      surfaceActive: "212 212 212",
+      text: "23 23 23",
+      textMuted: "82 82 91",
+      border: "24 24 27",
+      radiusControl: "0.75rem",
+      radiusSurface: "1rem",
+      shadowSurface: "0 1px 3px rgb(24 24 27 / 0.06)",
+      shadowOverlay: "0 24px 80px rgb(0 0 0 / 0.22), 0 4px 20px rgb(0 0 0 / 0.12)",
+      glassAlpha: 1,
+      heroGradient: "none",
+      pageMaxWidth: "72rem",
+      borderAlpha: 0.06,
+    },
+    dark: {
+      canvas: "28 28 30",
+      surface: "51 51 51",
+      surfaceMuted: "64 64 64",
+      surfaceHover: "82 82 82",
+      surfaceActive: "115 115 115",
+      text: "250 250 250",
+      textMuted: "212 212 216",
+      border: "255 255 255",
+      radiusControl: "0.75rem",
+      radiusSurface: "1rem",
+      shadowSurface: "0 1px 3px rgb(0 0 0 / 0.35)",
+      shadowOverlay: "0 28px 90px rgb(0 0 0 / 0.5), 0 4px 24px rgb(0 0 0 / 0.3)",
+      glassAlpha: 1,
+      heroGradient: "none",
+      pageMaxWidth: "72rem",
+      borderAlpha: 0.1,
+    },
+  },
   {
     id: "aurora",
     accent: "#fc466b",
@@ -174,14 +216,49 @@ export const THEME_TEMPLATES: ThemeTemplate[] = [
   },
 ];
 
-export const THEME_TEMPLATE_IDS = THEME_TEMPLATES.map((template) => template.id);
+function mergeTemplates(...groups: ThemeTemplate[][]) {
+  const merged: ThemeTemplate[] = [];
+  const seen = new Set<string>();
+
+  for (const group of groups) {
+    for (const template of group) {
+      if (!template?.id || seen.has(template.id)) continue;
+      seen.add(template.id);
+      merged.push(template);
+    }
+  }
+
+  return merged;
+}
+
+/** 运行时可用模板：内置 + 自定义（按 id 去重，内置优先） */
+export const THEME_TEMPLATES: ThemeTemplate[] = mergeTemplates(
+  BUILTIN_THEME_TEMPLATES,
+  CUSTOM_THEME_TEMPLATES,
+);
+
+/**
+ * 运行时注册一套主题，返回是否注册成功（id 重复会被忽略）。
+ * 适合插件或按远端配置动态加载主题的场景。
+ */
+export function registerThemeTemplate(template: ThemeTemplate) {
+  if (!template?.id || THEME_TEMPLATES.some((item) => item.id === template.id)) {
+    return false;
+  }
+  THEME_TEMPLATES.push(template);
+  return true;
+}
+
+export function listThemeTemplates() {
+  return THEME_TEMPLATES;
+}
 
 export type ThemeTemplateId = string;
 
-export const DEFAULT_THEME_TEMPLATE = "aurora";
+export const DEFAULT_THEME_TEMPLATE = "official";
 
 export function normalizeThemeTemplate(value: string | undefined | null): ThemeTemplateId {
-  if (value && THEME_TEMPLATE_IDS.includes(value)) {
+  if (value && THEME_TEMPLATES.some((template) => template.id === value)) {
     return value;
   }
   return DEFAULT_THEME_TEMPLATE;
