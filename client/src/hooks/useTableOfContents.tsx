@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface TableOfContent {
@@ -6,6 +6,14 @@ export interface TableOfContent {
     text: string
     marginLeft: number
     element: HTMLElement
+}
+
+const getHeaderScrollOffset = () => {
+    const rawValue = getComputedStyle(document.documentElement)
+        .getPropertyValue('--header-scroll-offset')
+        .trim()
+    const offset = Number.parseFloat(rawValue)
+    return Number.isFinite(offset) ? offset : 0
 }
 
 const useTableOfContents = (selector: string) => {
@@ -75,27 +83,38 @@ const useTableOfContents = (selector: string) => {
         if (io.current) io.current.disconnect()
     }
 
-    return {
-        TOC: () => (<div className='rounded-2xl bg-w py-4 px-4 t-primary'>
+    const tocStateRef = useRef({ tableOfContents, activeIndex, t })
+    tocStateRef.current = { tableOfContents, activeIndex, t }
+
+    const TOC = useCallback(() => {
+        const { tableOfContents, activeIndex, t } = tocStateRef.current
+
+        return <div className='rounded-2xl bg-w py-4 px-4 t-primary'>
             <h2 className="text-lg font-bold">{t("index.title")}</h2>
             <ul className="max-h-[calc(100vh-10.25rem)] overflow-auto" style={{ scrollbarWidth: "none" }}>
                 {tableOfContents.length === 0 && <li>{t("index.empty.title")}</li>}
                 {tableOfContents.map((item) => (
                     <li
                         key={`toc$${item.index}`}
-                        className={activeIndex === item.index ? "text-theme" : ""}
+                        className={`cursor-pointer hover:opacity-50 ${activeIndex === item.index ? "text-theme" : ""}`}
                         style={{ marginLeft: item.marginLeft }}
                         onClick={() => {
-                            item.element.scrollIntoView({
+                            const top = item.element.getBoundingClientRect().top + window.scrollY - getHeaderScrollOffset()
+                            window.scrollTo({
+                                top: Math.max(top, 0),
                                 behavior: 'smooth'
-                            });
+                            })
                         }}
                     >
                         {item.text}
                     </li>
                 ))}
             </ul>
-        </div>), cleanup
+        </div>
+    }, [])
+
+    return {
+        TOC, cleanup
     }
 }
 

@@ -1,79 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @layer base {
-    /* Aurora风格背景色 */
-    .bg-w {
-      background-color: var(--background-secondary);
-    }
-  
-    .bg-primary {
-      background-color: var(--background-primary);
-    }
-  
-    .bg-secondary {
-      background-color: var(--background-secondary);
-    }
-  
-    /* Aurora风格按钮 */
-    .bg-button {
-      background-color: var(--background-secondary);
-      transition: var(--theme-transition);
-    }
-    
-    .bg-button:hover {
-      background-color: var(--background-trans);
-      transform: translateY(-1px);
-    }
-    
-    .bg-button:active {
-      transform: translateY(0);
-    }
-
-    .bg-hover {
-      transition: var(--theme-transition);
-    }
-    
-    .bg-hover:hover {
-      background-color: var(--background-trans);
-    }
-  
-    /* Aurora风格阴影 */
-    .shadow-light {
-      box-shadow: var(--card-shadow);
-    }
-  
-    .shadow-deep {
-      box-shadow: var(--card-shadow-hover);
-    }
-    
-    .shadow-aurora {
-      box-shadow: var(--accent-shadow);
-    }
-  
-    /* Aurora风格文本 */
-    .t-primary {
-      color: var(--text-bright);
-    }
-  
-    .t-secondary {
-      color: var(--text-normal);
-    }
-    
-    .t-dim {
-      color: var(--text-dim);
-    }
-    
-    .t-accent {
-      color: var(--text-accent);
-    }
-    
-    .t-sub-accent {
-      color: var(--text-sub-accent);
-    }
-  
-    /* 响应式宽度 */
     .wauto {
       @apply w-full md:w-11/12 lg:w-10/12 xl:w-8/12 2xl:w-6/12 duration-300;
     }
@@ -81,25 +9,35 @@
     .writeauto {
       @apply w-full md:w-7/12 lg:w-8/12 duration-300;
     }
-    
-    /* Aurora风格卡片 */
-    .aurora-card {
-      background-color: var(--background-secondary);
-      box-shadow: var(--card-shadow);
-      border-radius: 1rem;
-      transition: var(--theme-transition);
+
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
-    
-    .aurora-card:hover {
-      box-shadow: var(--card-shadow-hover);
-      transform: translateY(-2px);
+
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
     }
-    
-    /* Aurora风格渐变 */
-    .aurora-gradient-text {
-      background: var(--strong-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+
+    input[type="color"].color-input-reset {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background: transparent;
     }
+
+    input[type="color"].color-input-reset::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    input[type="color"].color-input-reset::-webkit-color-swatch {
+      border: none;
+      border-radius: 9999px;
+    }
+
+    input[type="color"].color-input-reset::-moz-color-swatch {
+      border: none;
+      border-radius: 9999px;
+    }
+
   }

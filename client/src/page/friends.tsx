@@ -2,16 +2,16 @@ import i18next from "i18next";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from "react-i18next";
-import Modal from 'react-modal';
-import Select from 'react-select';
+import { FlatActionButton, FlatPanel, Modal, SearchableSelect } from "@rin/ui";
 import { ShowAlertType, useAlert, useConfirm } from "../components/dialog";
 import { Input } from "../components/input";
+import { ImageWithFallback } from "../components/image-with-fallback";
 import { Waiting } from "../components/loading";
-import { client } from "../main";
+import { client } from "../app/runtime";
 import { ClientConfigContext } from "../state/config";
 import { ProfileContext } from "../state/profile";
-import { shuffleArray } from "../utils/array";
-import { headersWithAuth } from "../utils/auth";
+
+import { useSiteConfig } from "../hooks/useSiteConfig";
 import { siteName } from "../utils/constants";
 
 
@@ -26,17 +26,16 @@ type FriendItem = {
     url: string;
     accepted: number;
     health: string;
+    sort_order?: number;
 };
 
 async function publish({ name, avatar, desc, url, showAlert }: { name: string, avatar: string, desc: string, url: string, showAlert: ShowAlertType }) {
     const t = i18next.t
-    const { error } = await client.friend.index.post({
+    const { error } = await client.friend.create({
         avatar,
         name,
         desc,
         url
-    }, {
-        headers: headersWithAuth()
     })
     if (error) {
         showAlert(error.value as string)
@@ -49,8 +48,9 @@ async function publish({ name, avatar, desc, url, showAlert }: { name: string, a
 
 export function FriendsPage() {
     const { t } = useTranslation()
+    const siteConfig = useSiteConfig();
     const config = useContext(ClientConfigContext)
-    let [apply, setApply] = useState<FriendItem>()
+    let [apply] = useState<FriendItem>()
     const [name, setName] = useState("")
     const [desc, setDesc] = useState("")
     const [avatar, setAvatar] = useState("")
@@ -65,22 +65,17 @@ export function FriendsPage() {
     const { showAlert, AlertUI } = useAlert()
     useEffect(() => {
         if (ref.current) return
-        client.friend.index.get({
-            headers: headersWithAuth()
-        }).then(({ data }) => {
+        client.friend.list().then(({ data }) => {
             if (data) {
-                const friends_available = data.friend_list?.filter(({ health, accepted }) => health.length === 0 && accepted === 1) || []
-                shuffleArray(friends_available)
-                setFriendsAvailable(friends_available)
-                const friends_unavailable = data.friend_list?.filter(({ health, accepted }) => health.length > 0 && accepted === 1) || []
-                shuffleArray(friends_unavailable)
-                setFriendsUnavailable(friends_unavailable)
-                const waitList = data.friend_list?.filter(({ accepted }) => accepted === 0) || []
-                setWaitList(waitList)
-                const refuesdList = data.friend_list?.filter(({ accepted }) => accepted === -1) || []
-                setRefusedList(refuesdList)
-                if (data.apply_list)
-                    setApply(data.apply_list)
+                const friend_list = data.friend_list || []
+                const friends_available = friend_list.filter(({ health, accepted }: any) => health.length === 0 && accepted === 1) || []
+                setFriendsAvailable(friends_available as any)
+                const friends_unavailable = friend_list.filter(({ health, accepted }: any) => health.length > 0 && accepted === 1) || []
+                setFriendsUnavailable(friends_unavailable as any)
+                const waitList = friend_list.filter(({ accepted }: any) => accepted === 0) || []
+                setWaitList(waitList as any)
+                const refuesdList = friend_list.filter(({ accepted }: any) => accepted === -1) || []
+                setRefusedList(refuesdList as any)
             }
             setStatus('idle')
         })
@@ -91,10 +86,10 @@ export function FriendsPage() {
     }
     return (<>
         <Helmet>
-            <title>{`${t('friends.title')} - ${process.env.NAME}`}</title>
+            <title>{`${t('friends.title')} - ${siteConfig.name}`}</title>
             <meta property="og:site_name" content={siteName} />
             <meta property="og:title" content={t('friends.title')} />
-            <meta property="og:image" content={process.env.AVATAR} />
+            <meta property="og:image" content={siteConfig.avatar} />
             <meta property="og:type" content="article" />
             <meta property="og:url" content={document.URL} />
         </Helmet>
@@ -113,20 +108,20 @@ export function FriendsPage() {
                 <FriendList title={t('friends.my_apply')} show={profile?.permission !== true && apply !== undefined} friends={apply ? [apply] : []} />
                 {profile && (profile.permission || config.get("friend_apply_enable")) &&
                     <div className="wauto t-primary flex text-start text-2xl font-bold mt-8">
-                        <div className="md:basis-1/2 bg-w rounded-xl p-4">
+                        <FlatPanel className="md:basis-1/2 p-6">
                             <p>
                                 {profile.permission ? t('friends.create') : t('friends.apply')}
                             </p>
                             <div className="text-sm mt-4 text-neutral-500 font-normal">
-                                <Input value={name} setValue={setName} placeholder={t('sitename')} />
-                                <Input value={desc} setValue={setDesc} placeholder={t('description')} className="mt-2" />
-                                <Input value={avatar} setValue={setAvatar} placeholder={t('avatar.url')} className="mt-2" />
-                                <Input value={url} setValue={setUrl} placeholder={t('url')} className="my-2" />
+                                <Input value={name} setValue={setName} placeholder={t('sitename')} variant="flat" />
+                                <Input value={desc} setValue={setDesc} placeholder={t('description')} variant="flat" className="mt-2" />
+                                <Input value={avatar} setValue={setAvatar} placeholder={t('avatar.url')} variant="flat" className="mt-2" />
+                                <Input value={url} setValue={setUrl} placeholder={t('url')} variant="flat" className="my-2" />
                                 <div className='flex flex-row justify-center'>
-                                    <button onClick={publishButton} className='basis-1/2 bg-theme text-white py-4 rounded-full shadow-xl shadow-light'>{t('create.title')}</button>
+                                    <button onClick={publishButton} className='basis-1/2 rounded-full bg-theme py-4 text-white'>{t('create.title')}</button>
                                 </div>
                             </div>
-                        </div>
+                        </FlatPanel>
                     </div>
                 }
                 </div>
@@ -163,6 +158,7 @@ function Friend({ friend }: { friend: FriendItem }) {
     const [desc, setDesc] = useState(friend.desc || "")
     const [url, setUrl] = useState(friend.url)
     const [status, setStatus] = useState(friend.accepted)
+    const [sortOrder, setSortOrder] = useState(friend.sort_order || 0)
     const [modalIsOpen, setIsOpen] = useState(false);
     const { showConfirm, ConfirmUI } = useConfirm()
     const { showAlert, AlertUI } = useAlert()
@@ -172,9 +168,7 @@ function Friend({ friend }: { friend: FriendItem }) {
             t('delete.title'),
             t('delete.confirm'),
             () => {
-                client.friend({ id: friend.id }).delete(friend.id, {
-                    headers: headersWithAuth()
-                }).then(({ error }) => {
+                client.friend.delete(friend.id).then(({ error }) => {
                     if (error) {
                         showAlert(error.value as string)
                     } else {
@@ -187,14 +181,13 @@ function Friend({ friend }: { friend: FriendItem }) {
     }, [friend.id])
 
     const updateFriend = useCallback(() => {
-        client.friend({ id: friend.id }).put({
+        client.friend.update(friend.id, {
             avatar,
             name,
             desc,
             url,
-            accepted: status
-        }, {
-            headers: headersWithAuth()
+            accepted: status,
+            sort_order: sortOrder
         }).then(({ error }) => {
             if (error) {
                 showAlert(error.value as string)
@@ -204,7 +197,7 @@ function Friend({ friend }: { friend: FriendItem }) {
                 })
             }
         })
-    }, [avatar, name, desc, url, status])
+    }, [avatar, name, desc, url, status, sortOrder])
 
     const statusOption = [
         { value: -1, label: t('friends.review.rejected') },
@@ -213,14 +206,17 @@ function Friend({ friend }: { friend: FriendItem }) {
     ]
     return (
         <>
-            <a title={friend.name} href={friend.url} target="_blank" className="bg-button w-full bg-w rounded-xl p-4 flex flex-col justify-center items-center relative">
-                <div className="w-16 h-16">
-                    <img className={"rounded-full " + (friend.health.length > 0 ? "grayscale" : "")} src={friend.avatar} alt={friend.name} />
-                </div>
-                <p className="text-base text-center">{friend.name}</p>
-                {friend.health.length == 0 && <p className="text-sm text-neutral-500 text-center">{friend.desc}</p>}
+            <a title={friend.name} href={friend.url} target="_blank" rel="noopener noreferrer" className="relative flex min-w-0 w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-w p-4 bg-button">
+                <ImageWithFallback
+                    className="h-16 w-16 rounded-full"
+                    imageClassName={friend.health.length > 0 ? "grayscale" : ""}
+                    src={friend.avatar}
+                    alt={friend.name}
+                />
+                <p className="mt-1 max-w-full truncate text-center text-base">{friend.name}</p>
+                {friend.health.length == 0 && <p className="line-clamp-2 max-w-full text-center text-sm text-neutral-500 [overflow-wrap:anywhere]">{friend.desc}</p>}
                 {friend.accepted !== 1 && <p className={`${friend.accepted === 0 ? "t-primary" : "text-theme"}`}>{statusOption[friend.accepted + 1].label}</p>}
-                {friend.health.length > 0 && <p className="text-sm text-gray-500 text-center">{errorHumanize(friend.health)}</p>}
+                {friend.health.length > 0 && <p className="max-w-full text-center text-sm text-gray-500 [overflow-wrap:anywhere]">{errorHumanize(friend.health)}</p>}
                 {(profile?.permission || profile?.id === friend.uid) && <>
                     <button onClick={(e) => { e.preventDefault(); setIsOpen(true) }} className="absolute top-0 right-0 m-2 px-2 py-1 bg-secondary t-primary rounded-full bg-button">
                         <i className="ri-settings-line"></i>
@@ -229,36 +225,17 @@ function Friend({ friend }: { friend: FriendItem }) {
 
             <Modal
                 isOpen={modalIsOpen}
-                style={{
-                    content: {
-                        top: '50%',
-                        left: '50%',
-                        right: 'auto',
-                        bottom: 'auto',
-                        marginRight: '-50%',
-                        transform: 'translate(-50%, -50%)',
-                        padding: '0',
-                        border: 'none',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        background: 'white',
-                    },
-                    overlay: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                        zIndex: 1000
-                    }
-                }
-                }
                 onRequestClose={() => setIsOpen(false)}
                 contentLabel={t('update$sth', { sth: friend.name })}
+                panelClassName="overflow-visible p-6"
             >
-                <div className="w-[80vw] sm:w-[60vw] md:w-[50vw] lg:w-[40vw] xl:w-[30vw] bg-w rounded-xl p-4 flex flex-col justify-start items-center relative">
-                    <div className="w-16 h-16">
-                        <img className={"rounded-xl " + (friend.health.length > 0 ? "grayscale" : "")} src={friend.avatar} alt={friend.name} />
-                    </div>
+                <div className="relative flex w-full flex-col items-center justify-start">
+                    <ImageWithFallback
+                        className="h-16 w-16 rounded-xl"
+                        imageClassName={friend.health.length > 0 ? "grayscale" : ""}
+                        src={friend.avatar}
+                        alt={friend.name}
+                    />
                     {profile?.permission &&
                         <div className="flex flex-col w-full items-start mt-4 px-4">
                             <div className="flex flex-row justify-between w-full items-center">
@@ -268,27 +245,49 @@ function Friend({ friend }: { friend: FriendItem }) {
                                     </p>
                                 </div>
                                 <div className="flex flex-row items-center justify-center space-x-4">
-                                    <Select options={statusOption} required defaultValue={statusOption[friend.accepted + 1]}
-                                        onChange={(newValue, _) => {
-                                            const value = newValue?.value
-                                            if (value !== undefined) {
-                                                setStatus(value)
+                                    <SearchableSelect
+                                        value={String(status)}
+                                        onChange={(nextValue) => {
+                                            const parsed = Number(nextValue)
+                                            if (!Number.isNaN(parsed)) {
+                                                setStatus(parsed)
                                             }
                                         }}
+                                        options={statusOption.map((option) => ({
+                                            label: option.label,
+                                            value: String(option.value),
+                                        }))}
+                                        placeholder={t('status')}
+                                        searchPlaceholder={t('status')}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex flex-row justify-between w-full items-center mt-2">
+                                <div className="flex flex-col">
+                                    <p className="text-lg dark:text-white">
+                                        {t('sort_order')}
+                                    </p>
+                                </div>
+                                <div className="flex flex-row items-center justify-center space-x-4">
+                                    <Input
+                                        value={sortOrder.toString()} 
+                                        setValue={(val) => setSortOrder(parseInt(val) || 0)} 
+                                        placeholder={t('sort_order')}
+                                        variant="flat"
                                     />
                                 </div>
                             </div>
                         </div>
                     }
-                    <Input value={name} setValue={setName} placeholder={t('sitename')} className="mt-4" />
-                    <Input value={desc} setValue={setDesc} placeholder={t('description')} className="mt-2" />
-                    <Input value={avatar} setValue={setAvatar} placeholder={t('avatar.url')} className="mt-2" />
-                    <Input value={url} setValue={setUrl} placeholder={t('url')} className="my-2" />
+                    <Input value={name} setValue={setName} placeholder={t('sitename')} variant="flat" className="mt-4" />
+                    <Input value={desc} setValue={setDesc} placeholder={t('description')} variant="flat" className="mt-2" />
+                    <Input value={avatar} setValue={setAvatar} placeholder={t('avatar.url')} variant="flat" className="mt-2" />
+                    <Input value={url} setValue={setUrl} placeholder={t('url')} variant="flat" className="my-2" />
                     <div className='flex flex-row justify-center space-x-2'>
-                        <button onClick={deleteFriend} className="bg-secondary text-theme rounded-full bg-button px-4 py-2 mt-2">{t('delete.title')}</button>
-                        <button onClick={updateFriend} className="bg-secondary t-primary rounded-full bg-button px-4 py-2 mt-2">{t('save')}</button>
+                        <FlatActionButton onClick={deleteFriend} className="mt-2 text-theme">{t('delete.title')}</FlatActionButton>
+                        <FlatActionButton onClick={updateFriend} className="mt-2 t-primary">{t('save')}</FlatActionButton>
                     </div>
-                </div >
+                </div>
             </Modal>
             <ConfirmUI />
             <AlertUI />

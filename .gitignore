@@ -4,11 +4,14 @@ dist/**
 .turbo
 *.db
 .env
+.secrets
 test.ts
 *.log
 .env.production
 .wrangler
 wrangler.toml
+.vite
+coverage/
 # Logs
 logs
 npm-debug.log*
@@ -41,4 +44,6 @@ hexo-theme-aurora-main
 .edgeone/*
 !.edgeone/project.json
 .tef_dist/*
-  
+
+# Bun
+.bun/*

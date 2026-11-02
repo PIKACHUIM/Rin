@@ -1,38 +1,48 @@
-import { useEffect, useRef, useState } from "react"
-import { Helmet } from 'react-helmet-async'
-import { Link } from "wouter"
-import { Waiting } from "../components/loading"
-import { client } from "../main"
-import { headersWithAuth } from "../utils/auth"
-import { siteName } from "../utils/constants"
-import { useTranslation } from "react-i18next";
+import {useEffect, useRef, useState} from "react"
+import {Helmet} from 'react-helmet'
+import {Link} from "wouter"
+import {Waiting} from "../components/loading"
+import { client } from "../app/runtime"
+import {useSiteConfig} from "../hooks/useSiteConfig";
+import {siteName} from "../utils/constants"
+import {useTranslation} from "react-i18next";
 
+interface FeedItem {
+    id: number;
+    createdAt: Date;
+    title: string | null;
+}
 
 export function TimelinePage() {
-    const [feeds, setFeeds] = useState<Partial<Record<number, { id: number; title: string | null; createdAt: Date; }[]>>>()
+    const [feeds, setFeeds] = useState<Partial<Record<number, FeedItem[]>>>()
+    const [length, setLength] = useState(0)
     const ref = useRef(false)
     const { t } = useTranslation()
+    const siteConfig = useSiteConfig();
     function fetchFeeds() {
-        client.feed.timeline.get({
-            headers: headersWithAuth()
-        }).then(({ data }) => {
-            if (data && typeof data !== 'string') {
-                const groups: Partial<Record<number, { id: number; title: string | null; createdAt: Date; }[]>> = {}
-                data.forEach((item: any) => {
-                    const year = new Date(item.createdAt).getFullYear()
-                    if (!groups[year]) {
-                        groups[year] = []
-                    }
-                    groups[year]!.push({
-                        id: item.id,
-                        title: item.title,
-                        createdAt: new Date(item.createdAt)
-                    })
-                })
-                setFeeds(groups)
+        client.feed.timeline()
+        .then(({ data }) => {
+            if (data) {
+                const arr = Array.isArray(data) ? data : []
+                setLength(arr.length)
+                // 兼容的分组逻辑
+                const groups = (Object.groupBy
+                    ? Object.groupBy(arr, ({ createdAt }) => new Date(createdAt).getFullYear())
+                    : arr.reduce<Record<number, any[]>>((acc, item) => {
+                        const key = new Date(item.createdAt).getFullYear()
+                        ;(acc[key] ||= []).push(item)
+                        return acc
+                    }, {})
+                )
+
+                setFeeds(groups as any)
             }
         })
+        .catch(err => {
+            console.error("fetchFeeds error:", err)
+        })
     }
+
     useEffect(() => {
         if (ref.current) return
         fetchFeeds()
@@ -41,24 +51,27 @@ export function TimelinePage() {
     return (
         <>
             <Helmet>
-                <title>{`${t('timeline')} - ${process.env.NAME}`}</title>
+                <title>{`${t('timeline')} - ${siteConfig.name}`}</title>
                 <meta property="og:site_name" content={siteName} />
                 <meta property="og:title" content={t('timeline')} />
-                <meta property="og:image" content={process.env.AVATAR} />
+                <meta property="og:image" content={siteConfig.avatar} />
                 <meta property="og:type" content="article" />
                 <meta property="og:url" content={document.URL} />
             </Helmet>
             <Waiting for={feeds}>
-                <main className="w-full flex flex-col justify-center items-center mb-8 ani-show" style={{ marginTop: '10rem' }}>
-                    {/* 标题已隐藏 */}
-                    <div className="wauto rounded-2xl p-6" style={{
-                        background: 'linear-gradient(135deg, rgba(var(--background-secondary-rgb), 0.75), rgba(var(--background-primary-rgb), 0.8))',
-                        boxShadow: 'var(--card-shadow)',
-                        border: '1px solid rgba(var(--background-trans-rgb), 0.3)',
-                        backdropFilter: 'blur(10px)'
-                    }}>
+                <main className="w-full flex flex-col justify-center items-center mb-8 ani-show">
+                    <div className="wauto text-start text-black dark:text-white py-4 text-4xl font-bold">
+                        <p>
+                            {t('timeline')}
+                        </p>
+                        <div className="flex flex-row justify-between">
+                            <p className="text-sm mt-4 text-neutral-500 font-normal">
+                                {t('article.total$count', { count: length })}
+                            </p>
+                        </div>
+                    </div>
                     {feeds && Object.keys(feeds).sort((a, b) => parseInt(b) - parseInt(a)).map(year => (
-                        <div key={year} className="w-full flex flex-col justify-center items-start">
+                        <div key={year} className="wauto flex flex-col justify-center items-start">
                             <h1 className="flex flex-row items-center space-x-2">
                                 <span className="text-2xl font-bold t-primary ">
                                     {t('year$year', { year: year })}
@@ -69,12 +82,12 @@ export function TimelinePage() {
                             </h1>
                             <div className="w-full flex flex-col justify-center items-start my-4">
                                 {feeds[+year]?.map(({ id, title, createdAt }) => (
-                                    <FeedItem key={id} id={id.toString()} title={title || t('untitled')} createdAt={new Date(createdAt)} />
+                                    <FeedItem key={id} id={id.toString()} title={title || t('unlisted')}
+                                              createdAt={new Date(createdAt)}/>
                                 ))}
                             </div>
                         </div>
                     ))}
-                    </div>
                 </main>
             </Waiting>
         </>
@@ -84,15 +97,15 @@ export function TimelinePage() {
 export function FeedItem({ id, title, createdAt }: { id: string, title: string, createdAt: Date }) {
     const formatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit' });
     return (
-        <div className="flex flex-row pl-8">
-            <div className="flex flex-row items-center">
+        <div className="flex min-w-0 flex-row pl-8">
+            <div className="flex shrink-0 flex-row items-center">
                 <div className="w-2 h-2 bg-theme rounded-full"></div>
             </div>
-            <div className="flex-1 rounded-2xl m-2 duration-300 flex flex-row items-center space-x-4   ">
-                <span className="t-secondary text-sm" title={new Date(createdAt).toLocaleString()}>
+            <div className="m-2 flex min-w-0 flex-1 flex-row items-center space-x-4 rounded-2xl duration-300">
+                <span className="shrink-0 text-sm t-secondary" title={new Date(createdAt).toLocaleString()}>
                     {formatter.format(new Date(createdAt))}
                 </span>
-                <Link href={`/feed/${id}`} target="_blank" className="text-base t-primary hover:text-theme text-pretty overflow-hidden">
+                <Link href={`/feed/${id}`} target="_blank" rel="noopener noreferrer" className="min-w-0 break-words text-base t-primary hover:text-theme text-pretty [overflow-wrap:anywhere]">
                     {title}
                 </Link>
             </div>
