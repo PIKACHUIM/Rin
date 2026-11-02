@@ -1,0 +1,5 @@
+{
+  "buildCommand": "bun run build:edgeone",
+  "installCommand": "bun install",
+  "outputDirectory": "./dist/client"
+}
