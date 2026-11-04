@@ -20,13 +20,13 @@ export function FeedViewSwitcher({
   onChange: (layout: FeedLayout) => void;
 }) {
   const { t } = useTranslation();
-  const label = t("feed_layout.switcher_label");
+  const label = t("settings.feed_layout.switcher_label");
 
   return (
     <div className="rin-view-switcher" role="group" aria-label={label}>
       {FEED_LAYOUT_OPTIONS.map((layout) => {
         const active = value === layout;
-        const name = t(`feed_layout.options.${layout}`);
+        const name = t(`settings.feed_layout.options.${layout}`);
         return (
           <button
             key={layout}

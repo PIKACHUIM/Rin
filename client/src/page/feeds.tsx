@@ -131,7 +131,7 @@ export function FeedsPage() {
                                     ))}
                                 </div>
                                 {currentFeedData.length === 0 ? (
-                                    <p className="rin-feed-empty">{t('feed_layout.empty')}</p>
+                                    <p className="rin-feed-empty">{t('settings.feed_layout.empty')}</p>
                                 ) : null}
                                 <nav className="rin-pagination" aria-label="Pagination">
                                     {page > 1 ? (
