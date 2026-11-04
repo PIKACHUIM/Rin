@@ -16,7 +16,7 @@ Live site: <https://coding.opkg.cn>
 
 - **Single Worker for frontend + backend**: the client bundle is uploaded via `[assets]`, `/api` lives on the
   same origin — no CORS, no two-domain configuration. SPA routes fall back to `index.html`.
-- **Templated theme system**: five built-in themes (`official` / `aurora` / `fuwari` / `noir` / `zen`),
+- **Templated theme system**: eight built-in themes (`official` / `aurora` / `noir` / `zen` / `fresh` / `cute` / `tech` / `minimal`),
   switchable from the admin UI, plus a registration API for custom themes.
 - **Multi-domain login**: the OAuth `state` carries a signed origin, so logging in from any routed domain
   returns to that same domain. `FRONTEND_URL` is gone.
@@ -150,9 +150,12 @@ wallpaper and accent color support:
 | --- | --- |
 | `official` | Upstream look: neutral greys, white cards, no gradients or blur (default) |
 | `aurora` | Cool gradients with glassmorphism |
-| `fuwari` | Soft pastels and large radii |
 | `noir` | High-contrast monochrome, small radii, no blur |
 | `zen` | Warm paper tones with serif headings |
+| `fresh` | Mint green with skylight gradients, airy whitespace |
+| `cute` | Cream pink candy glows, large radii and soft shadows |
+| `tech` | Deep space blue with cyan grid, monospace headings |
+| `minimal` | Warm paper white, hairline strokes, quiet typography |
 
 To add a theme, append an entry (light + dark tokens) to `client/src/theme/custom-templates.ts`;
 it shows up in the settings UI automatically. `registerThemeTemplate()` is available for runtime registration.

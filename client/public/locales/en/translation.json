@@ -512,7 +512,6 @@
       "options": {
         "official": "Official",
         "aurora": "Aurora",
-        "fuwari": "Fuwari",
         "noir": "Noir",
         "zen": "Zen",
         "fresh": "Fresh",
@@ -523,7 +522,6 @@
       "preview": {
         "official": "Upstream default: neutral greys, white cards, hairline shadows, no gradients or blur.",
         "aurora": "Cool gradients with frosted glass, tuned for tech and product sites.",
-        "fuwari": "Soft pastels and generous radii for a light, airy feel.",
         "noir": "High-contrast monochrome with crisp edges and tighter density.",
         "zen": "Warm paper tones and serif headings, comfortable for long reading.",
         "fresh": "Mint and daylight gradients with airy spacing for life and nature journals.",

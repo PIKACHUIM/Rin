@@ -14,7 +14,7 @@ PikaBlog 是基于 [openRin/Rin](https://github.com/openRin/Rin) 的个人博客
 ## 相比上游做了什么
 
 - **前后端合并为单个 Worker**：前端构建产物通过 `[assets]` 上传，`/api` 与页面同源，没有 CORS、不用维护两套域名；SPA 深链由 Worker 回退 `index.html`
-- **模板化主题系统**：内置 5 套主题（`official` / `aurora` / `fuwari` / `noir` / `zen`），后台可视化切换，支持自定义模板注册
+- **模板化主题系统**：内置 8 套主题（`official` / `aurora` / `noir` / `zen` / `fresh` / `cute` / `tech` / `minimal`），后台可视化切换，支持自定义模板注册
 - **多域名登录**：OAuth `state` 里带签名后的来源域名，从任意已路由域名登录都能跳回原域名，不再依赖 `FRONTEND_URL`
 - **按域名的 SEO 输出**：`sitemap.xml` / `robots.txt` / RSS 全部用当前请求的 origin 生成绝对链接，多域名互不串号
 - **数据层迁移到 D1 `rinblogs-data`**：补齐最新 schema（评论、说说、缓存表、AI 摘要字段与索引）
@@ -28,7 +28,7 @@ PikaBlog 是基于 [openRin/Rin](https://github.com/openRin/Rin) 的个人博客
 - 话题标签、时间线、说说（Moments）、搜索、友链（定时健康检查）
 - 评论与审核、Webhook 通知、AI 摘要（Workers AI + Queue）
 - RSS / Atom / JSON Feed、`sitemap.xml`、`robots.txt`
-- 5 套主题模板 + 自定义壁纸 + 强调色，明暗模式跟随系统
+- 8 套主题模板 + 自定义壁纸 + 强调色，明暗模式跟随系统
 - 中 / 繁 / 英 / 日 四语言界面
 
 ## 架构
@@ -138,15 +138,18 @@ npx wrangler deploy --config wrangler.local.toml
 
 ## 主题
 
-后台「设置 → 个性化 → 主题模板」可切换 5 套模板，并支持自定义壁纸与强调色：
+后台「设置 → 个性化 → 主题模板」可切换 8 套模板，并支持自定义壁纸与强调色：
 
 | 模板 | 风格 |
 | --- | --- |
 | `official` | 上游默认：中性灰白、白卡片、无渐变无模糊（当前默认） |
 | `aurora` | 冷调渐变 + 玻璃拟态 |
-| `fuwari` | 柔和粉彩、大圆角 |
 | `noir` | 黑白强对比、小圆角、无模糊 |
 | `zen` | 暖纸底色 + 衬线标题 |
+| `fresh` | 薄荷绿 + 天光渐变，留白通透 |
+| `cute` | 奶油粉糖果光晕，大圆角软阴影 |
+| `tech` | 深空蓝 + 青色网格，等宽标题 |
+| `minimal` | 暖白纸感 + 发丝描边，安静的排版 |
 
 新增主题：在 `client/src/theme/custom-templates.ts` 追加一项（明暗两套令牌）即可，设置页会自动出现；
 插件式场景可调用 `registerThemeTemplate()` 运行时注册。
