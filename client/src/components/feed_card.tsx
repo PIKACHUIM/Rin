@@ -16,8 +16,8 @@ function FeedCardImage({ src, variant }: { src: string; variant: FeedCardVariant
     const aspectRatio = width && height ? `${width} / ${height}` : "16 / 9";
     const imageFrameClass =
         variant === "editorial"
-            ? "relative flex max-h-80 w-full flex-row items-center overflow-hidden rounded-[20px]"
-            : "relative mb-2 flex max-h-80 w-full flex-row items-center overflow-hidden rounded-xl";
+            ? "rin-feed-card-media relative flex max-h-80 w-full flex-row items-center overflow-hidden rounded-[20px]"
+            : "rin-feed-card-media relative mb-2 flex max-h-80 w-full flex-row items-center overflow-hidden rounded-xl";
 
     useEffect(() => {
         if (!blurhash || !canvasRef.current) {
@@ -110,15 +110,15 @@ export function FeedCard({ id, title, avatar, draft, listed, top, summary, hasht
     const activeVariant = normalizeFeedCardVariant(variant ?? siteConfig.feedCardVariant);
     const styles = FEED_CARD_STYLES[activeVariant];
     const body = (
-        <div className={styles.card}>
+        <div className={`${styles.card} rin-feed-card ${avatar ? "rin-feed-card--with-image" : ""}`}>
             {avatar ? (
-                <div className={styles.imageWrap}>
+                <div className={`${styles.imageWrap} rin-feed-card-image-wrap`}>
                     <FeedCardImage src={avatar} variant={activeVariant} />
                 </div>
             ) : null}
-            <div className={activeVariant === "editorial" ? "px-2 pb-2" : ""}>
-                <h1 className={styles.title}>{title}</h1>
-                <p className={`space-x-2 ${styles.meta}`}>
+            <div className={`rin-feed-card-content ${activeVariant === "editorial" ? "px-2 pb-2" : ""}`}>
+                <h2 className={`${styles.title} rin-feed-card-title`}>{title}</h2>
+                <p className={`rin-feed-card-meta space-x-2 ${styles.meta}`}>
                     <span title={new Date(createdAt).toLocaleString()}>
                         {createdAt === updatedAt ? timeago(createdAt) : t('feed_card.published$time', { time: timeago(createdAt) })}
                     </span>
@@ -128,12 +128,12 @@ export function FeedCard({ id, title, avatar, draft, listed, top, summary, hasht
                         </span>
                     }
                 </p>
-                <p className={`space-x-2 ${styles.meta} ${activeVariant === "editorial" ? "mt-2" : ""}`}>
+                <p className={`rin-feed-card-meta rin-feed-card-status space-x-2 ${styles.meta} ${activeVariant === "editorial" ? "mt-2" : ""}`}>
                     {draft === 1 && <span>{t("draft")}</span>}
                     {listed === 0 && <span>{t("unlisted")}</span>}
                     {top === 1 && <span className="text-theme">{t('article.top.title')}</span>}
                 </p>
-                <p className={`whitespace-pre-line break-words [overflow-wrap:anywhere] ${styles.summary} ${activeVariant === "editorial" ? "mt-4 max-w-3xl" : ""}`}>{summary}</p>
+                <p className={`rin-feed-card-summary whitespace-pre-line break-words [overflow-wrap:anywhere] ${styles.summary} ${activeVariant === "editorial" ? "mt-4 max-w-3xl" : ""}`}>{summary}</p>
                 {safeHashtags.length > 0 &&
                     <div className={`flex flex-row flex-wrap justify-start gap-2 ${activeVariant === "editorial" ? "mt-4" : "mt-2 gap-x-2"}`}>
                         {safeHashtags.map(({ name }, index) => (

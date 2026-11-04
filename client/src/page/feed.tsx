@@ -185,12 +185,12 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
             <div className="xl:w-64" />
             <main className="wauto">
               <article
-                className="rounded-2xl bg-w m-2 px-6 py-4"
+                className="rin-article rounded-2xl bg-w m-2 px-6 py-4"
                 aria-label={feed.title ?? "Unnamed"}
               >
-                <div className="flex justify-between">
-                  <div>
-                    <div className="mt-1 mb-1 flex gap-1">
+                <div className="rin-article-heading flex justify-between">
+                  <div className="min-w-0">
+                    <div className="rin-article-meta mt-1 mb-1 flex gap-1">
                       <p
                         className="text-gray-400 text-[12px]"
                         title={new Date(feed.createdAt).toLocaleString()}
@@ -223,7 +223,7 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
                       </span>
                     </p>}
                     <div className="flex flex-row items-center">
-                      <h1 className="text-2xl font-bold t-primary break-all">
+                      <h1 className="rin-article-title text-2xl font-bold t-primary break-all">
                         {feed.title}
                       </h1>
                       <div className="flex-1 w-0" />
@@ -258,16 +258,16 @@ export function FeedPage({ id, TOC, clean }: { id: string, TOC: () => JSX.Elemen
                   </div>
                 </div>
                 {(hasAISummary || showAISummaryState) && (
-                  <div className="my-4 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-100 dark:border-purple-800/30">
-                    <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="rin-ai-summary my-4 rounded-xl p-4">
+                    <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <i className="ri-sparkling-2-fill text-purple-500" />
-                        <span className="text-sm font-medium text-purple-600 dark:text-purple-400">
+                        <i className="ri-sparkling-2-fill text-theme" />
+                        <span className="text-sm font-medium t-primary">
                           {t('ai_summary.title')}
                         </span>
                       </div>
                       {showAISummaryState ? (
-                        <span className="rounded-full bg-white/70 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-white/10 dark:text-purple-300">
+                        <span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium t-primary">
                           {t(`ai_summary.status.${feed.ai_summary_status}`)}
                         </span>
                       ) : null}

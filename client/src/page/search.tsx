@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet'
 import { useTranslation } from "react-i18next"
 import { Link, useSearch } from "wouter"
 import { FeedCard } from "../components/feed_card"
+import { feedListClassName } from "../components/feed-layout-options";
 import { Waiting } from "../components/loading"
 import { client } from "../app/runtime"
 
@@ -24,7 +25,7 @@ export function SearchPage({ keyword }: { keyword: string }) {
     const [feeds, setFeeds] = useState<FeedsData>()
     const page = tryInt(1, query.get("page"))
     const limit = tryInt(siteConfig.pageSize, query.get("limit"))
-    const feedListClass = siteConfig.feedLayout === "masonry" ? "wauto columns-1 gap-5 md:columns-2" : "wauto flex flex-col";
+    const feedListClass = `wauto ${feedListClassName(siteConfig.feedLayout)}`;
     const feedData = Array.isArray(feeds?.data) ? feeds.data : [];
     const ref = useRef("")
     function fetchFeeds() {

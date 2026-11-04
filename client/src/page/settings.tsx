@@ -278,7 +278,9 @@ export function Settings() {
                       description={t(`settings.theme_template.preview.${template.id}`)}
                       onClick={() => {
                         setConfigValue("client", "theme.template", template.id);
+                        setConfigValue("client", "theme.color", template.accent);
                         applyThemeTemplate(template.id);
+                        applyThemeColor(template.accent);
                       }}
                     />
                   ))}

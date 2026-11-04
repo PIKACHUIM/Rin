@@ -3,6 +3,7 @@ import Popup from "reactjs-popup";
 import { useLocation } from "wouter";
 import type { Profile } from "../../../state/profile";
 import { LanguageSwitch, SearchButton, UserAvatar } from "./action-buttons";
+import { ThemeModeSwitch } from "./theme-mode-switch";
 import { NavBar } from "./nav-bar";
 
 export function Menu({ profile }: { profile?: Profile | null }) {
@@ -60,6 +61,9 @@ export function Menu({ profile }: { profile?: Profile | null }) {
             <SearchButton onClose={onClose} />
             <LanguageSwitch />
             <UserAvatar profile={profile} />
+          </div>
+          <div className="mt-2 flex justify-center">
+            <ThemeModeSwitch inline />
           </div>
           <NavBar menu={true} onClick={onClose} />
         </div>

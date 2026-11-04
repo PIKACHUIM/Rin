@@ -8,38 +8,42 @@ export const classicLayoutDefinition: HeaderLayoutDefinition = {
   kind: "top",
   renderDesktop({ children, profile, siteConfig }) {
     return (
-      <div className="hidden w-full items-center justify-between md:flex">
-        <BrandLink siteConfig={siteConfig} className="mr-8 hidden flex-row items-center md:flex" />
-        <div className="flex min-w-0 flex-1 items-center justify-center">
-          <div className="scrollbar-none rin-glass min-w-0 max-w-full overflow-x-auto rounded-full px-2 shadow-xl shadow-light t-primary">
+      <div className="rin-classic-header hidden w-full items-center justify-between gap-8 md:flex">
+        <BrandLink
+          siteConfig={siteConfig}
+          className="rin-header-brand mr-auto hidden min-w-0 flex-row items-center md:flex"
+          avatarClassName="h-10 w-10 rounded-full"
+          titleClassName="text-base font-semibold tracking-tight t-primary"
+          descriptionClassName="max-w-48"
+        />
+        <nav aria-label="Main navigation" className="rin-main-nav flex min-w-0 flex-1 items-center justify-center">
+          <div className="scrollbar-none min-w-0 max-w-full overflow-x-auto">
             <div className="flex min-w-max flex-row items-center whitespace-nowrap">
-              <NavBar menu={false} itemClassName="whitespace-nowrap px-3 py-3 md:p-3 text-[15px]" />
+              <NavBar menu={false} itemClassName="rin-nav-link whitespace-nowrap px-3 py-3 md:px-3 md:py-4 text-sm" />
             </div>
           </div>
-        </div>
-        <div className="ml-8 hidden flex-row items-center space-x-2 md:flex">
+        </nav>
+        <div className="rin-header-actions ml-auto hidden shrink-0 flex-row items-center gap-1 md:flex">
           {children ? <div className="flex items-center text-sm t-primary">{children}</div> : null}
-          <HeaderActions profile={profile} className="flex flex-row items-center space-x-2" />
+          <HeaderActions profile={profile} plain className="flex flex-row items-center gap-1" />
         </div>
       </div>
     );
   },
   renderMobile({ children, profile, siteConfig }) {
     return (
-      <div className="flex w-full flex-row items-center justify-center md:hidden">
-        <div className="w-full flex-row items-center justify-center transition-all duration-500">
-          <div className="rin-glass flex flex-row items-center rounded-full px-2 shadow-xl shadow-light t-primary">
-            <BrandLink
-              siteConfig={siteConfig}
-              compact
-              className="visible mr-auto flex flex-row items-center py-2 opacity-100 duration-300 md:hidden"
-            />
-            <NavBar menu={false} />
-            <div className="ml-auto flex items-center gap-1">
-              {children ? <div className="flex items-center text-sm t-primary">{children}</div> : null}
-              <Menu profile={profile} />
-            </div>
-          </div>
+      <div className="rin-mobile-header flex w-full flex-row items-center justify-between gap-3 py-2 md:hidden">
+        <BrandLink
+          siteConfig={siteConfig}
+          compact
+          className="visible min-w-0 flex flex-row items-center opacity-100 duration-300 md:hidden"
+          avatarClassName="h-9 w-9 rounded-full"
+          titleClassName="text-sm font-semibold t-primary"
+          descriptionClassName="max-w-48"
+        />
+        <div className="flex shrink-0 items-center gap-1">
+          {children ? <div className="flex items-center text-sm t-primary">{children}</div> : null}
+          <Menu profile={profile} />
         </div>
       </div>
     );

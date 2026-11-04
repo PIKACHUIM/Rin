@@ -1,5 +1,10 @@
 html {
   background-color: rgb(var(--rin-canvas-rgb));
+  color-scheme: light;
+}
+
+html[data-color-mode="dark"] {
+  color-scheme: dark;
 }
 
 /* 使用更高优先级覆盖 index.css 中 body 的实心底色，让壁纸层可见 */
@@ -142,9 +147,778 @@ h3,
   background: none;
 }
 
+.rin-header-container {
+  max-width: 88rem;
+  margin-inline: auto;
+  border-bottom: 1px solid rgb(var(--rin-border-rgb) / 0.1);
+}
+
+.rin-classic-header,
+.rin-mobile-header {
+  min-height: 4.5rem;
+}
+
+.rin-main-nav .rin-nav-link {
+  position: relative;
+  color: rgb(var(--rin-text-muted-rgb));
+  transition: color 180ms ease;
+}
+
+.rin-main-nav .rin-nav-link:hover,
+.rin-main-nav .rin-nav-link.text-theme {
+  color: rgb(var(--rin-text-rgb));
+}
+
+.rin-main-nav .rin-nav-link.text-theme::after {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.5rem;
+  left: 0.75rem;
+  height: 2px;
+  border-radius: 999px;
+  background: rgb(var(--theme-rgb));
+  content: "";
+}
+
+.rin-header-actions button,
+.rin-mobile-header button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.rin-home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2rem;
+  padding-block: clamp(4rem, 9vw, 7.5rem) clamp(2.5rem, 5vw, 4rem);
+  border-bottom: 1px solid rgb(var(--rin-border-rgb) / 0.12);
+  animation: rin-editorial-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.rin-home-intro-copy h1,
+.rin-article-title {
+  margin: 0;
+  color: rgb(var(--rin-text-rgb));
+  font-family: var(--rin-font-display);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+
+.rin-home-intro-copy h1 {
+  font-size: clamp(3.25rem, 8vw, 7rem);
+  line-height: 0.98;
+  overflow-wrap: anywhere;
+}
+
+.rin-home-intro-copy > p {
+  max-width: 46rem;
+  margin: 1.5rem 0 0;
+  color: rgb(var(--rin-text-muted-rgb));
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.8;
+}
+
+.rin-home-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  padding-bottom: 0.25rem;
+  color: rgb(var(--rin-text-muted-rgb));
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+.rin-home-count-value {
+  color: rgb(var(--rin-text-rgb));
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.rin-home-articles {
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.rin-home-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.25rem;
+}
+
+.rin-home-list-header h2 {
+  margin: 0;
+  color: rgb(var(--rin-text-rgb));
+  font-family: var(--rin-font-display);
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+.rin-feed-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rin-feed-filter {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  color: rgb(var(--rin-text-muted-rgb));
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.rin-feed-filter:hover,
+.rin-feed-filter.is-active {
+  background: rgb(var(--theme-rgb) / 0.09);
+  color: rgb(var(--theme-rgb));
+}
+
+/* ---------- 首页列表：四种视图共用同一套卡片 DOM ---------- */
+
+.rin-feed-list {
+  width: 100%;
+  max-width: none;
+}
+
+.rin-feed-list > a {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 视图切换器 */
+.rin-home-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.rin-view-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.25rem;
+  border: 1px solid rgb(var(--rin-border-rgb) / 0.14);
+  border-radius: 999px;
+  background: rgb(var(--rin-surface-rgb) / 0.55);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+}
+
+.rin-view-switcher-item {
+  display: inline-flex;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(var(--rin-text-muted-rgb));
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.rin-view-switcher-item:hover {
+  background: rgb(var(--rin-surface-hover-rgb) / 0.85);
+  color: rgb(var(--rin-text-rgb));
+}
+
+.rin-view-switcher-item.is-active {
+  background: rgb(var(--rin-text-rgb));
+  color: rgb(var(--rin-canvas-rgb));
+}
+
+.rin-view-switcher-item:focus-visible {
+  outline: 2px solid rgb(var(--theme-rgb));
+  outline-offset: 2px;
+}
+
+.rin-view-switcher-label {
+  display: none;
+}
+
+.rin-feed-empty {
+  margin: 0;
+  padding: clamp(3rem, 8vw, 5rem) 1rem;
+  border-top: 1px dashed rgb(var(--rin-border-rgb) / 0.16);
+  color: rgb(var(--rin-text-muted-rgb));
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* —— 视图一：单列编辑排版 —— */
+.rin-feed-list--list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rin-feed-list--list > a {
+  position: relative;
+  border-top: 1px solid rgb(var(--rin-border-rgb) / 0.1);
+}
+
+.rin-feed-list--list > a::before {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: rgb(var(--theme-rgb));
+  content: "";
+  transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rin-feed-list--list > a:hover::before {
+  width: 100%;
+}
+
+.rin-feed-list--list .rin-feed-card {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  margin: 0 !important;
+  padding: 1.75rem 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: color 180ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rin-feed-list--list .rin-feed-card--with-image {
+  grid-template-columns: minmax(12rem, 0.78fr) minmax(0, 1.22fr);
+}
+
+.rin-feed-list--list .rin-feed-card-image-wrap {
+  min-width: 0;
+  margin: 0 !important;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 0.8rem !important;
+}
+
+.rin-feed-list--list .rin-feed-card-media {
+  width: 100%;
+  min-height: 12rem;
+  max-height: none !important;
+  margin: 0 !important;
+  aspect-ratio: 16 / 10 !important;
+  border-radius: inherit !important;
+  background: rgb(var(--rin-surface-muted-rgb));
+}
+
+.rin-feed-list--list .rin-feed-card-content {
+  min-width: 0;
+  padding: 0 !important;
+}
+
+.rin-feed-list--list .rin-feed-card-title {
+  margin: 0;
+  color: rgb(var(--rin-text-rgb)) !important;
+  font-family: var(--rin-font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.25;
+  transition: color 180ms ease;
+}
+
+.rin-feed-list--list > a:hover .rin-feed-card-title {
+  color: rgb(var(--theme-rgb)) !important;
+}
+
+.rin-feed-list--list .rin-feed-card-meta {
+  margin-top: 0.8rem;
+  color: rgb(var(--rin-text-muted-rgb)) !important;
+  font-size: 0.75rem !important;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  line-height: 1.5;
+}
+
+.rin-feed-list--list .rin-feed-card-status:empty {
+  display: none;
+}
+
+.rin-feed-list--list .rin-feed-card-summary {
+  max-width: 44rem;
+  margin-top: 0.9rem !important;
+  color: rgb(var(--rin-text-muted-rgb)) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.8 !important;
+}
+
+/* —— 卡片表面：瀑布流 / 网格 / 杂志共用 —— */
+.rin-feed-list--masonry .rin-feed-card,
+.rin-feed-list--grid .rin-feed-card,
+.rin-feed-list--magazine .rin-feed-card {
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid rgb(var(--rin-border-rgb) / calc(var(--rin-border-alpha, 0.08) + 0.03)) !important;
+  border-radius: var(--rin-radius-surface) !important;
+  background-color: rgb(var(--rin-surface-rgb)) !important;
+  box-shadow: var(--rin-shadow-surface) !important;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+
+.rin-feed-list--masonry .rin-feed-card:hover,
+.rin-feed-list--grid .rin-feed-card:hover,
+.rin-feed-list--magazine .rin-feed-card:hover {
+  transform: translateY(-3px);
+  border-color: rgb(var(--theme-rgb) / 0.3) !important;
+  box-shadow: var(--rin-shadow-overlay) !important;
+}
+
+.rin-feed-list--masonry .rin-feed-card:not(.rin-feed-card--with-image),
+.rin-feed-list--grid .rin-feed-card:not(.rin-feed-card--with-image),
+.rin-feed-list--magazine .rin-feed-card:not(.rin-feed-card--with-image) {
+  background-image: linear-gradient(180deg, rgb(var(--theme-rgb) / 0.07), transparent 46%);
+}
+
+.rin-feed-list--masonry .rin-feed-card-image-wrap,
+.rin-feed-list--grid .rin-feed-card-image-wrap,
+.rin-feed-list--magazine .rin-feed-card-image-wrap {
+  margin: 0 !important;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.rin-feed-list--masonry .rin-feed-card-media,
+.rin-feed-list--grid .rin-feed-card-media,
+.rin-feed-list--magazine .rin-feed-card-media {
+  min-height: 0;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: rgb(var(--rin-surface-muted-rgb));
+}
+
+.rin-feed-list--masonry .rin-feed-card-content,
+.rin-feed-list--grid .rin-feed-card-content,
+.rin-feed-list--magazine .rin-feed-card-content {
+  min-width: 0;
+  padding: 1.25rem 1.35rem 1.4rem !important;
+}
+
+.rin-feed-list--masonry .rin-feed-card-title,
+.rin-feed-list--grid .rin-feed-card-title,
+.rin-feed-list--magazine .rin-feed-card-title {
+  margin: 0;
+  color: rgb(var(--rin-text-rgb)) !important;
+  font-family: var(--rin-font-display);
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.35;
+  transition: color 180ms ease;
+}
+
+.rin-feed-list--masonry > a:hover .rin-feed-card-title,
+.rin-feed-list--grid > a:hover .rin-feed-card-title,
+.rin-feed-list--magazine > a:hover .rin-feed-card-title {
+  color: rgb(var(--theme-rgb)) !important;
+}
+
+.rin-feed-list--masonry .rin-feed-card-meta,
+.rin-feed-list--grid .rin-feed-card-meta,
+.rin-feed-list--magazine .rin-feed-card-meta {
+  margin-top: 0.65rem;
+  color: rgb(var(--rin-text-muted-rgb)) !important;
+  font-size: 0.72rem !important;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.rin-feed-list--masonry .rin-feed-card-status:empty,
+.rin-feed-list--grid .rin-feed-card-status:empty,
+.rin-feed-list--magazine .rin-feed-card-status:empty {
+  display: none;
+}
+
+.rin-feed-list--masonry .rin-feed-card-summary,
+.rin-feed-list--grid .rin-feed-card-summary,
+.rin-feed-list--magazine .rin-feed-card-summary {
+  margin-top: 0.7rem !important;
+  color: rgb(var(--rin-text-muted-rgb)) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.75 !important;
+}
+
+/* —— 视图二：瀑布流 —— */
+.rin-feed-list--masonry {
+  display: block;
+  columns: 1;
+  column-gap: 1.5rem;
+}
+
+.rin-feed-list--masonry > a {
+  display: block;
+  margin-bottom: 1.5rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* —— 视图三：网格 —— */
+.rin-feed-list--grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+}
+
+.rin-feed-list--grid > a {
+  display: flex;
+}
+
+.rin-feed-list--grid .rin-feed-card {
+  width: 100%;
+}
+
+.rin-feed-list--grid .rin-feed-card-media {
+  aspect-ratio: 16 / 10 !important;
+}
+
+/* —— 视图四：杂志（首篇特稿 + 双列） —— */
+.rin-feed-list--magazine {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.75rem;
+}
+
+.rin-feed-list--magazine > a:first-child {
+  grid-column: 1 / -1;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card--with-image {
+  grid-template-columns: 1.15fr 1fr;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card-image-wrap {
+  height: 100%;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card-media {
+  height: 100%;
+  aspect-ratio: 16 / 11 !important;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card-content {
+  align-self: center;
+  padding: clamp(1.5rem, 3vw, 2.75rem) !important;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card-title {
+  font-size: clamp(1.75rem, 3vw, 2.5rem) !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.2;
+}
+
+.rin-feed-list--magazine > a:first-child .rin-feed-card-summary {
+  font-size: 0.98rem !important;
+}
+
+@media (min-width: 768px) {
+  .rin-feed-list--masonry {
+    columns: 2;
+  }
+
+  .rin-feed-list--grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rin-feed-list--magazine {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .rin-feed-list--masonry {
+    columns: 3;
+  }
+
+  .rin-feed-list--grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rin-feed-list--magazine {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rin-view-switcher-label {
+    display: inline;
+  }
+}
+
+.rin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.5rem;
+}
+
+.rin-pagination-link {
+  display: inline-flex;
+  min-width: 5.5rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(var(--rin-border-rgb) / 0.16);
+  border-radius: 999px;
+  color: rgb(var(--rin-text-rgb));
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+
+.rin-pagination-link:hover {
+  border-color: rgb(var(--theme-rgb) / 0.55);
+  background: rgb(var(--theme-rgb) / 0.08);
+  color: rgb(var(--theme-rgb));
+}
+
+.rin-article {
+  margin: 0 !important;
+  padding: clamp(1.5rem, 4vw, 3rem) !important;
+  border: 0;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.rin-article-heading {
+  gap: 1.5rem;
+  align-items: flex-start;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgb(var(--rin-border-rgb) / 0.12);
+}
+
+.rin-article-meta {
+  flex-wrap: wrap;
+  color: rgb(var(--rin-text-muted-rgb)) !important;
+  font-size: 0.76rem;
+  letter-spacing: 0.035em;
+}
+
+.rin-article-title {
+  max-width: 18ch;
+  margin-top: 1rem;
+  font-size: clamp(2.25rem, 5vw, 4rem) !important;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.rin-article .toc-content {
+  color: rgb(var(--rin-text-rgb));
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.rin-article .toc-content p {
+  margin-block: 1.35em;
+  line-height: 1.9;
+}
+
+.rin-article .toc-content h1,
+.rin-article .toc-content h2,
+.rin-article .toc-content h3,
+.rin-article .toc-content h4 {
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+  color: rgb(var(--rin-text-rgb));
+  font-family: var(--rin-font-display);
+  letter-spacing: -0.025em;
+  line-height: 1.35;
+}
+
+.rin-article .toc-content a {
+  color: rgb(var(--theme-rgb));
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.rin-article .toc-content blockquote {
+  margin-inline: 0;
+  padding: 0.25rem 1.25rem;
+  border-left: 2px solid rgb(var(--theme-rgb) / 0.65);
+  color: rgb(var(--rin-text-muted-rgb));
+}
+
+.rin-article .toc-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+}
+
+.rin-article .toc-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.rin-ai-summary {
+  border: 1px solid rgb(var(--theme-rgb) / 0.16);
+  background: rgb(var(--theme-rgb) / 0.055);
+}
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--theme-rgb));
+  outline-offset: 3px;
+}
+
+@keyframes rin-editorial-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rin-feed-list > a {
+  animation: rin-editorial-rise 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.rin-feed-list > a:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.rin-feed-list > a:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.rin-feed-list > a:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+@media (max-width: 767px) {
+  .rin-header-container {
+    padding-inline: 1rem;
+  }
+
+  .rin-home-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-top: 3.5rem;
+  }
+
+  .rin-home-count {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    text-align: left;
+  }
+
+  .rin-home-count-value {
+    font-size: 2rem;
+  }
+
+  .rin-home-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .rin-home-list-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .rin-feed-list--list .rin-feed-card--with-image {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rin-feed-list--list .rin-feed-card-media {
+    min-height: 0;
+  }
+
+  .rin-feed-list--magazine > a:first-child .rin-feed-card--with-image {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rin-feed-list--magazine > a:first-child .rin-feed-card-media {
+    aspect-ratio: 16 / 10 !important;
+  }
+
+  .rin-article {
+    padding-inline: 0.5rem !important;
+  }
+
+  .rin-article-heading {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .rin-article-title {
+    font-size: clamp(2rem, 10vw, 3.25rem) !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rin-surface-hover,
+  .rin-main-nav .rin-nav-link,
+  .rin-feed-filter,
+  .rin-feed-card-title,
+  .rin-pagination-link,
+  .rin-view-switcher-item,
+  .rin-feed-list > a::before,
+  .rin-feed-list--masonry .rin-feed-card,
+  .rin-feed-list--grid .rin-feed-card,
+  .rin-feed-list--magazine .rin-feed-card,
   body::before {
     transition: none;
+  }
+
+  .rin-home-intro,
+  .rin-feed-list > a,
+  .ani-show,
+  .ani-show-fast,
+  .popup-content {
+    animation: none !important;
   }
 }

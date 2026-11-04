@@ -6,23 +6,18 @@ import { Helmet } from "react-helmet";
 import { siteName } from '../utils/constants';
 import { useTranslation } from "react-i18next";
 import { buildLoginPath, HIDDEN_LOGIN_REDIRECT } from "../utils/auth-redirect";
+import { useThemeModePreference, type ThemeModePreference } from "../utils/darkModeUtils";
 
-type ThemeMode = 'light' | 'dark' | 'system';
 function Footer() {
     const { t } = useTranslation()
     const [, setLocation] = useLocation()
-    const [modeState, setModeState] = useState<ThemeMode>('system');
+    const [modeState, setModeState] = useThemeModePreference();
     const config = useContext(ClientConfigContext);
     const footerHtml = config.get<string>('footer');
     const footerHtmlRef = useRef<HTMLDivElement | null>(null);
     const mountedScriptNodesRef = useRef<HTMLScriptElement[]>([]);
     const loginEnabled = config.getBoolean('login.enabled');
     const [doubleClickTimes, setDoubleClickTimes] = useState(0);
-    useEffect(() => {
-        const mode = localStorage.getItem('theme') as ThemeMode || 'system';
-        setModeState(mode);
-        setMode(mode);
-    }, [])
 
     useEffect(() => {
         const container = footerHtmlRef.current;
@@ -63,24 +58,6 @@ function Footer() {
             mountedScriptNodesRef.current = [];
         };
     }, [footerHtml])
-
-    const setMode = (mode: ThemeMode) => {
-        setModeState(mode);
-        localStorage.setItem('theme', mode);
-
-
-        if (mode !== 'system' || (!('theme' in localStorage) && window.matchMedia(`(prefers-color-scheme: ${mode})`).matches)) {
-            document.documentElement.setAttribute('data-color-mode', mode);
-        } else {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-            if (mediaQuery.matches) {
-                document.documentElement.setAttribute('data-color-mode', 'dark');
-            } else {
-                document.documentElement.setAttribute('data-color-mode', 'light');
-            }
-        }
-        window.dispatchEvent(new Event("colorSchemeChange"));
-    };
 
     return (
         <footer>
@@ -135,9 +112,9 @@ function Footer() {
                     </>}
                 </p>
                 <div className="w-fit-content inline-flex rounded-full border border-zinc-200 p-[3px] dark:border-zinc-700">
-                    <ThemeButton mode='light' current={modeState} label="Toggle light mode" icon="ri-sun-line" onClick={setMode} />
-                    <ThemeButton mode='system' current={modeState} label="Toggle system mode" icon="ri-computer-line" onClick={setMode} />
-                    <ThemeButton mode='dark' current={modeState} label="Toggle dark mode" icon="ri-moon-line" onClick={setMode} />
+                    <ThemeButton mode='light' current={modeState} label="Toggle light mode" icon="ri-sun-line" onClick={setModeState} />
+                    <ThemeButton mode='system' current={modeState} label="Toggle system mode" icon="ri-computer-line" onClick={setModeState} />
+                    <ThemeButton mode='dark' current={modeState} label="Toggle dark mode" icon="ri-moon-line" onClick={setModeState} />
                 </div>
             </div>
         </footer>
@@ -151,7 +128,7 @@ function Spliter() {
     )
 }
 
-function ThemeButton({ current, mode, label, icon, onClick }: { current: ThemeMode, label: string, mode: ThemeMode, icon: string, onClick: (mode: ThemeMode) => void }) {
+function ThemeButton({ current, mode, label, icon, onClick }: { current: ThemeModePreference, label: string, mode: ThemeModePreference, icon: string, onClick: (mode: ThemeModePreference) => void }) {
     return (<button aria-label={label} type="button" onClick={() => onClick(mode)}
         className={`rounded-inherit inline-flex h-[32px] w-[32px] items-center justify-center border-0 t-primary ${current === mode ? "bg-w rounded-full shadow-xl shadow-light" : ""}`}>
         <i className={`${icon}`} />

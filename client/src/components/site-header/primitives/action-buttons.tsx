@@ -11,6 +11,7 @@ import { ImageWithFallback } from "../../image-with-fallback";
 import { Button } from "../../button";
 import { Input } from "../../input";
 import { HEADER_POPUP_PANEL_CLASS } from "../shared";
+import { ThemeModeSwitch } from "./theme-mode-switch";
 
 export function HeaderActions({
   profile,
@@ -25,6 +26,7 @@ export function HeaderActions({
 }) {
   return (
     <div className={className}>
+      <ThemeModeSwitch plain={plain} popoverUp={popoverUp} />
       <SearchButton plain={plain} />
       <LanguageSwitch plain={plain} popoverUp={popoverUp} />
       <UserAvatar profile={profile} plain={plain} popoverUp={popoverUp} />

@@ -491,31 +491,45 @@
       "title": "Feed layout",
       "desc": "Choose how article cards are arranged in feed, search, and tag pages",
       "preview_note": "Preview only. The selected layout is applied after saving settings.",
+      "switcher_label": "Switch article view",
+      "empty": "No articles here yet. Try another view or come back later.",
       "options": {
         "list": "Single column",
-        "masonry": "Masonry"
+        "masonry": "Masonry",
+        "grid": "Grid",
+        "magazine": "Magazine"
       },
       "preview": {
         "list": "A steady reading flow with one card per row.",
-        "masonry": "A staggered multi-column layout that packs cards by height."
+        "masonry": "A staggered multi-column layout that packs cards by height.",
+        "grid": "Even cards side by side, fastest for scanning covers and titles.",
+        "magazine": "The first post becomes a feature, the rest flow in two columns."
       }
     },
     "theme_template": {
       "title": "Theme template",
-      "desc": "Pick the overall visual style. A template defines palette, radii, shadows and the hero background.",
+      "desc": "Pick the overall visual style. A template defines palette, radii, shadows, hero background, and applies its recommended accent.",
       "options": {
         "official": "Official",
         "aurora": "Aurora",
         "fuwari": "Fuwari",
         "noir": "Noir",
-        "zen": "Zen"
+        "zen": "Zen",
+        "fresh": "Fresh",
+        "cute": "Cute",
+        "tech": "Tech",
+        "minimal": "Minimal"
       },
       "preview": {
         "official": "Upstream default: neutral greys, white cards, hairline shadows, no gradients or blur.",
         "aurora": "Cool gradients with frosted glass, tuned for tech and product sites.",
         "fuwari": "Soft pastels and generous radii for a light, airy feel.",
         "noir": "High-contrast monochrome with crisp edges and tighter density.",
-        "zen": "Warm paper tones and serif headings, comfortable for long reading."
+        "zen": "Warm paper tones and serif headings, comfortable for long reading.",
+        "fresh": "Mint and daylight gradients with airy spacing for life and nature journals.",
+        "cute": "Creamy pink and candy glows, big radii and soft shadows.",
+        "tech": "Deep space blue with cyan grids and mono headings, dashboard order.",
+        "minimal": "Warm paper white and hairline strokes, almost no decoration."
       }
     },
     "theme_wallpaper": {
@@ -534,6 +548,12 @@
         "teal": "Teal",
         "orange": "Orange"
       }
+    },
+    "theme_mode": {
+      "title": "Color mode",
+      "light": "Light",
+      "system": "System",
+      "dark": "Dark"
     },
     "rss": {
       "desc": "Enable RSS subscription link at the site footer",

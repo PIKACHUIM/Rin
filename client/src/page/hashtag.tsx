@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Helmet } from 'react-helmet'
 import { useTranslation } from "react-i18next"
 import { FeedCard } from "../components/feed_card"
+import { feedListClassName } from "../components/feed-layout-options";
 import { Waiting } from "../components/loading"
 import { client } from "../app/runtime"
 
@@ -38,7 +39,7 @@ export function HashtagPage({ name }: { name: string }) {
     const siteConfig = useSiteConfig();
     const [status, setStatus] = useState<'loading' | 'idle'>('idle')
     const [hashtag, setHashtag] = useState<FeedsData>()
-    const feedListClass = siteConfig.feedLayout === "masonry" ? "wauto columns-1 gap-5 md:columns-2" : "wauto flex flex-col";
+    const feedListClass = `wauto ${feedListClassName(siteConfig.feedLayout)}`;
     const hashtagFeeds = Array.isArray(hashtag?.feeds) ? hashtag.feeds : [];
     const ref = useRef("")
     function fetchFeeds() {

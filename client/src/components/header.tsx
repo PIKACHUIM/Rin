@@ -60,7 +60,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
   }, [headerBehavior, headerLayout]);
 
   const useTopHeader = layoutDefinition.kind === "top";
-  const headerPaddingClassName = headerLayout === "compact" ? "mx-0 mt-0" : "mx-4 mt-4";
+  const headerPaddingClassName = "mx-0 mt-0";
   const containerClassName =
     !useTopHeader || headerBehavior === "static"
       ? "relative z-40"
@@ -83,7 +83,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
             </div>
           ) : (
             <Padding className={headerPaddingClassName}>
-              <div className="w-full">
+              <div className="rin-header-container w-full">
                 {layoutDefinition.renderMobile({ children, profile, siteConfig, behavior: headerBehavior, isAtTop })}
                 {layoutDefinition.renderDesktop({ children, profile, siteConfig, behavior: headerBehavior, isAtTop })}
               </div>
